@@ -154,50 +154,41 @@ if (!function_exists('calculateP4P7OverallPerformanceUtil')) {
 
 
 if (!function_exists('generateClassTeacherRemarkUtil')) {
-    function generateClassTeacherRemarkUtil($performanceData, $isP4_P7) {
-        if ($isP4_P7) {
-            $division = $performanceData['p4p7_division'] ?? 'Ungraded';
-            $aggregate = $performanceData['p4p7_aggregate_points'] ?? 0;
-            switch ($division) {
-                case 'I': return ($aggregate <= 6) ? "Wonderful work! You are a star. Keep up this great effort." : "Excellent job! You worked hard and did very well. Keep it up!";
-                case 'II': return ($aggregate >= 13 && $aggregate <= 15) ? "Very good effort! You're close to the top. Keep trying your best!" : "Good job! Keep working hard to do even better next time.";
-                case 'III': return "Fair effort. Try to focus more in class to improve.";
-                case 'IV': return "You need to try harder. Ask for help if you need it.";
-                case 'U': return "Please work much harder and ask your teachers for help.";
-                case 'X': return "You missed some exams. It's important to do them to see how you are doing.";
-                default: return "Try to focus on all subjects to get better results.";
-            }
-        } else { // P1-P3
-            $average = $performanceData['p1p3_average_eot_score'] ?? 0;
-            if ($average >= 85) return "Excellent work this term! You did wonderfully.";
-            if ($average >= 70) return "Very good job! Keep up the great work.";
-            if ($average >= 60) return "Good effort! Keep trying your best.";
-            if ($average >= 50) return "Nice try. Work a bit harder to do even better.";
-            return "Please try harder next term. Ask for help if you need it.";
+    // $isP4_P7 parameter is no longer needed as system is P5-P7 only.
+    // The calling code in run_calculations.php will need to be updated to not pass it.
+    // For now, we can make it optional or remove its usage here.
+    function generateClassTeacherRemarkUtil($performanceData, $isP4_P7 = true) {
+        // PerformanceData should align with new schema, e.g., 'division', 'aggregate_points'
+        $division = $performanceData['division'] ?? ($performanceData['p4p7_division'] ?? 'Ungraded');
+        $aggregate = $performanceData['aggregate_points'] ?? ($performanceData['p4p7_aggregate_points'] ?? 0);
+
+        switch ($division) {
+            case 'I': return ($aggregate <= 6) ? "Wonderful work! You are a star. Keep up this great effort." : "Excellent job! You worked hard and did very well. Keep it up!";
+            case 'II': return ($aggregate >= 13 && $aggregate <= 15) ? "Very good effort! You're close to the top. Keep trying your best!" : "Good job! Keep working hard to do even better next time.";
+            case 'III': return "Fair effort. Try to focus more in class to improve.";
+            case 'IV': return "You need to try harder. Ask for help if you need it.";
+            case 'U': return "Please work much harder and ask your teachers for help.";
+            case 'X': return "You missed some exams. It's important to do them to see how you are doing.";
+            default: return "Try to focus on all subjects to get better results.";
         }
     }
 }
 
 if (!function_exists('generateHeadTeacherRemarkUtil')) {
-    function generateHeadTeacherRemarkUtil($performanceData, $isP4_P7) {
-        if ($isP4_P7) {
-            $division = $performanceData['p4p7_division'] ?? 'Ungraded';
-            $aggregate = $performanceData['p4p7_aggregate_points'] ?? 0;
-            switch ($division) {
-                case 'I': return ($aggregate <= 6) ? "Amazing work! The school is proud of you. Keep being a good example!" : "Well done on getting First Grade! Your hard work is great to see.";
-                case 'II': return ($aggregate >= 13 && $aggregate <= 15) ? "Great result! You can reach First Grade. Keep aiming high!" : "Good job on this Second Grade. Listen to your teachers to do even better.";
-                case 'III': return "A fair result. The school wants you to work harder for a better grade next time.";
-                case 'IV': return "You need to work harder. The school wants you to do well.";
-                case 'U': return "This needs to be much better. Ask for help from teachers and parents.";
-                case 'X': return "Exams are important. The school expects you to try your best in all school work.";
-                default: return "Please work hard in all subjects. The school is here to help you.";
-            }
-        } else { // P1-P3
-            $average = $performanceData['p1p3_average_eot_score'] ?? 0;
-            if ($average >= 85) return "Wonderful job! The school is very proud of you. Keep it up!";
-            if ($average >= 70) return "Very good work! Keep trying hard and aim higher.";
-            if ($average >= 50) return "Good effort. Keep working hard, you can do even better."; // Covers 50-69
-            return "Please try to improve next term. Working hard in class helps a lot."; // Covers below 50
+    // $isP4_P7 parameter is no longer needed.
+    function generateHeadTeacherRemarkUtil($performanceData, $isP4_P7 = true) {
+        // PerformanceData should align with new schema, e.g., 'division', 'aggregate_points'
+        $division = $performanceData['division'] ?? ($performanceData['p4p7_division'] ?? 'Ungraded');
+        $aggregate = $performanceData['aggregate_points'] ?? ($performanceData['p4p7_aggregate_points'] ?? 0);
+
+        switch ($division) {
+            case 'I': return ($aggregate <= 6) ? "Amazing work! The school is proud of you. Keep being a good example!" : "Well done on getting First Grade! Your hard work is great to see.";
+            case 'II': return ($aggregate >= 13 && $aggregate <= 15) ? "Great result! You can reach First Grade. Keep aiming high!" : "Good job on this Second Grade. Listen to your teachers to do even better.";
+            case 'III': return "A fair result. The school wants you to work harder for a better grade next time.";
+            case 'IV': return "You need to work harder. The school wants you to do well.";
+            case 'U': return "This needs to be much better. Ask for help from teachers and parents.";
+            case 'X': return "Exams are important. The school expects you to try your best in all school work.";
+            default: return "Please work hard in all subjects. The school is here to help you.";
         }
     }
 }

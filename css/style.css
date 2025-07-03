@@ -1,0 +1,7 @@
+/* General Styles - css/style.css */
+body {
+    background-color: #FFFACD; /* LemonChiffon - very light yellow */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Add other shared styles here as the application grows */

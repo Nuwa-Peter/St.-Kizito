@@ -63,13 +63,26 @@ $pageUsername = $_SESSION['username'] ?? 'User'; // For navbar display
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($pageTitle); ?> - Maria Ow'embabazi P/S</title>
+    <title><?php echo htmlspecialchars($pageTitle); ?> - ST KIZITO PREPARATORY SEMINARY RWEBISHURI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="images/logo.png">
-    <link href="css/style.css" rel="stylesheet"> <!-- Assuming a general style.css -->
+    <link href="css/style.css" rel="stylesheet"> <!-- Ensure this file exists or remove link -->
     <style>
-        body { background-color: #e0f7fa; }
+        /* body background is now in css/style.css */
+        /* body { background-color: #FFFACD; } */ /* Moved to css/style.css */
+        .navbar-custom-manage { /* Custom class for this page's navbar */
+            background-color: #00008B !important; /* Dark Blue navbar */
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        .navbar-custom-manage .navbar-brand,
+        .navbar-custom-manage .nav-link {
+            color: #f8f9fa !important; /* Light color for text */
+        }
+        .navbar-custom-manage .navbar-brand:hover,
+        .navbar-custom-manage .nav-link:hover {
+            color: #FFFFE0 !important; /* Light yellow for hover */
+        }
         .container.main-content {
             background-color: #fff;
             padding: 25px;
@@ -81,16 +94,16 @@ $pageUsername = $_SESSION['username'] ?? 'User'; // For navbar display
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-light sticky-top shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-custom-manage sticky-top shadow-sm"> <!-- Added navbar-expand-lg for better structure if needed -->
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">
                 <img src="images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2" onerror="this.style.display='none';">
-                Maria Ow'embabazi P/S - Report System
+                ST KIZITO PREPARATORY SEMINARY RWEBISHURI - Report System
             </a>
-            <!-- User Dropdown (similar to index.php but might show different options or just logout) -->
+            <!-- User Dropdown -->
             <div class="ms-auto d-flex align-items-center">
                 <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"> <!-- Removed text-dark -->
                         <i class="fas fa-user-shield me-1"></i> <?php echo htmlspecialchars($pageUsername); ?> (Superadmin)
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -152,7 +165,7 @@ $pageUsername = $_SESSION['username'] ?? 'User'; // For navbar display
     </div>
 
     <footer class="text-center mt-5 mb-3 p-3" style="background-color: #f8f9fa;">
-        <p>&copy; <?php echo date('Y'); ?> Maria Ow'embabazi Primary School - <i>Good Christian, Good Citizen</i></p>
+        <p>&copy; <?php echo date('Y'); ?> ST KIZITO PREPARATORY SEMINARY RWEBISHURI - <i>MANE NOBISCUM DOMINE</i></p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

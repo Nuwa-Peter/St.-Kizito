@@ -106,9 +106,11 @@ try {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Font Awesome for icons -->
     <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="css/style.css" rel="stylesheet"> <!-- Added shared stylesheet -->
     <style>
+        /* body background is now in css/style.css */
         body {
-            background-color: #e0f7fa; /* Sky blue theme - light cyan */
+            /* background-color: #FFFACD; */ /* LemonChiffon - very light yellow */ /* Moved to css/style.css */
             display: flex;
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -116,7 +118,7 @@ try {
         #sidebar {
             min-width: 280px; /* Increased width */
             max-width: 280px; /* Increased width */
-            background: #007bff; /* Bootstrap primary blue */
+            background: #A0522D; /* Coffee Brown (Sienna) */
             color: #fff;
             transition: all 0.3s;
             position: fixed; /* Fixed Sidebar */
@@ -128,7 +130,7 @@ try {
         }
         #sidebar .sidebar-header {
             padding: 20px;
-            background: #0069d9; /* Darker blue */
+            background: #8B4513; /* Darker Coffee Brown (SaddleBrown) */
             text-align: center;
         }
         #sidebar .sidebar-header img {
@@ -157,12 +159,12 @@ try {
             transition: background 0.2s, color 0.2s;
         }
         #sidebar ul li a:hover {
-            color: #007bff; /* Blue text */
-            background: #fff; /* White background */
+            color: #00008B; /* Dark Blue text */
+            background: #FFFFE0; /* Light Yellow background */
         }
         #sidebar ul li.active > a, a[aria-expanded="true"] {
-            color: #fff;
-            background: #0062cc; /* Slightly darker blue for active */
+            color: #fff; /* White text */
+            background: #00008B; /* Dark Blue background for active */
         }
         #content {
             width: calc(100% - 280px); /* Adjust based on new sidebar width */
@@ -170,16 +172,35 @@ try {
             min-height: 100vh;
             transition: all 0.3s;
             margin-left: 280px; /* Match new sidebar width */
-            background-color: #e0f7fa; /* Ensure content background matches body */
+            background-color: #FFFACD; /* LemonChiffon - very light yellow, content background matches body */
         }
         #content.active {
             width: 100%;
             margin-left: 0;
         }
         .navbar-custom {
-            background-color: #ffffff; /* White navbar */
+            background-color: #00008B; /* Dark Blue navbar */
             box-shadow: 0 2px 4px rgba(0,0,0,.1);
         }
+        .navbar-custom .navbar-toggler-icon { /* For hamburger icon if used */
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        .navbar-custom .nav-link, .navbar-custom .navbar-brand { /* Adjust text color for dark navbar */
+            color: #f8f9fa !important; /* Light color for text */
+        }
+        .navbar-custom .nav-link:hover {
+            color: #FFFFE0 !important; /* Light yellow for hover */
+        }
+        #sidebarCollapse { /* Sidebar toggle button */
+            background-color: #FFD700 !important; /* Yellow (Gold) */
+            border-color: #FFD700 !important; /* Yellow (Gold) */
+            color: #00008B !important; /* Dark Blue text for contrast */
+        }
+        #sidebarCollapse:hover {
+            background-color: #f0c000 !important; /* Darker yellow for hover */
+            border-color: #f0c000 !important;
+        }
+
         .datetime-display {
             font-size: 0.9em;
             color: #dee2e6; /* Brighter color for date/time */
@@ -233,7 +254,7 @@ try {
     <nav id="sidebar">
         <div class="sidebar-header">
             <img src="images/logo.png" alt="School Logo" onerror="this.style.display='none';">
-            <h5>Maria Ow'embabazi P/S</h5>
+            <h5>ST KIZITO PREPARATORY SEMINARY RWEBISHURI</h5>
             <p class="datetime-display"><?php echo date("D, d M Y H:i"); ?></p>
         </div>
 
@@ -307,7 +328,7 @@ try {
                         <!-- Superadmin Activity Feed Bell -->
                         <div class="nav-item dropdown me-2">
                             <a class="nav-link" href="#" id="adminActivityBellLink" role="button" data-bs-toggle="dropdown" aria-expanded="false" title="Recent Activity">
-                                <i class="fas fa-bell text-secondary"></i>
+                                <i class="fas fa-bell"></i> <!-- Icon color will be inherited from .nav-link -->
                                 <span id="adminActivityBadge" class="badge rounded-pill bg-danger ms-1" style="display:none; font-size: 0.6em; vertical-align: top; margin-left: -2px;"></span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="adminActivityBellLink" id="adminActivityDropdown" style="width: 380px; max-height: 450px; overflow-y: auto;">
@@ -324,7 +345,7 @@ try {
 
                     <?php if (isset($_SESSION['username'])): ?>
                         <div class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"> <!-- text-dark removed, will inherit from .navbar-custom .nav-link -->
                                 <i class="fas fa-user-circle me-1 fa-lg"></i> <?php echo htmlspecialchars($_SESSION['username']); ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
@@ -343,15 +364,15 @@ try {
         </nav>
 
         <div class="container-fluid pt-3 text-center"> <!-- Centering container for h2 and card -->
-            <h2 class="mb-3">Dashboard</h2> <!-- Added margin-bottom to h2 -->
+            <h2 class="mb-3" style="color: #00008B;">Dashboard</h2> <!-- Dark Blue title -->
             <div class="main-content-card d-inline-block" style="max-width: 800px; width: 100%;"> <!-- d-inline-block and max-width for centering block elements -->
-                <p style="text-align: justify;">Welcome to the Maria Ow'embabazi Primary School Report Card System Dashboard. Use the sidebar to navigate through the available options. You can generate new reports, view summaries, or download templates.</p>
+                <p style="text-align: justify;">Welcome to the ST KIZITO PREPARATORY SEMINARY RWEBISHURI Report Card System Dashboard. Use the sidebar to navigate through the available options. You can generate new reports, view summaries, or download templates.</p>
                 <!-- More dashboard widgets/summaries can go here later -->
             </div>
 
             <?php if (!empty($dashboard_progress_data) && !empty($classes_list) && !empty($terms_list) && $current_academic_year_id): ?>
             <div class="card mt-4">
-                <div class="card-header">
+                <div class="card-header" style="background-color: #D2B48C; color: #4A3B31;"> <!-- Tan background, darker brown text -->
                     <h5 class="mb-0">Data Progress for Academic Year <?php echo htmlspecialchars($current_year_name); ?></h5>
                 </div>
                 <div class="card-body">
@@ -426,7 +447,7 @@ try {
         </div>
          <footer class="mt-auto py-3 bg-light text-center">
             <div class="container">
-                <span class="text-muted">&copy; 2025 Maria Ow'embabazi Primary School - Good Christian, Good Citizen</span>
+                <span class="text-muted">&copy; <?php echo date('Y'); ?> ST KIZITO PREPARATORY SEMINARY RWEBISHURI - MANE NOBISCUM DOMINE</span>
             </div>
         </footer>
     </div>

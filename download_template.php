@@ -91,21 +91,16 @@ function populateInstructionsSheet(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet
 
 
 try {
-    $templateType = $_GET['type'] ?? 'lower'; // Default to 'lower' if not specified
-    $subjects = [];
-    $filename = "";
+    // System is now P5-P7 only. Remove template type distinction.
+    // Subjects based on the new schema defaults for P5-P7.
+    $subjects = ['English Language', 'Mathematics', 'Science', 'Social Studies', 'Religious Education'];
+    $filename = "P5-P7_Marks_Template_" . date('Y-m-d') . ".xlsx";
 
-    if ($templateType === 'lower') {
-        $subjects = ['English', 'Maths', 'Literacy One', 'Literacy Two', 'Local Language', 'Religious Education'];
-        $filename = "Lower_Primary_Marks_Template_" . date('Y-m-d') . ".xlsx";
-    } elseif ($templateType === 'upper') {
-        $subjects = ['English', 'Maths', 'Science', 'SST', 'Kiswahili'];
-        $filename = "Upper_Primary_Marks_Template_" . date('Y-m-d') . ".xlsx";
-    } else {
-        if (ob_get_length()) ob_end_clean();
-        header("Content-Type: text/plain; charset=UTF-8");
-        die("Invalid template type specified. Use type=lower or type=upper.");
-    }
+    // Note: The populateSubjectSheet function uses the provided $subjectName directly as the sheet title.
+    // If the system expects short codes like 'ENG' from sheet names later during processing,
+    // then the $subjects array should contain these short codes, and populateSubjectSheet might need
+    // a mapping to get the full display name for notes, or the processing logic needs to handle full names.
+    // For now, using full names as sheet titles as per current populateSubjectSheet behavior.
 
     $spreadsheet = new Spreadsheet();
     if ($spreadsheet->getSheetCount() > 0) {
@@ -148,7 +143,7 @@ try {
 } catch (Exception $e) {
     if (ob_get_length()) ob_end_clean();
     header("Content-Type: text/plain; charset=UTF-8");
-    error_log("Error generating Excel template (type: " . htmlspecialchars($templateType ?? 'unknown') . "): " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine() . "\nStack Trace:\n" . $e->getTraceAsString());
+    error_log("Error generating Excel template: " . $e->getMessage() . " in " . $e->getFile() . " on line " . $e->getLine() . "\nStack Trace:\n" . $e->getTraceAsString());
     die("ERROR: Could not generate the Excel template due to an internal server error. Please contact the administrator. Details logged. Message: " . htmlspecialchars($e->getMessage()));
 }
 ?>

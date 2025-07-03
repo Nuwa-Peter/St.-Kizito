@@ -1,7 +1,7 @@
 <?php
 // Database connection details - REPLACE WITH YOUR ACTUAL CREDENTIALS
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'report_card_system'); // Choose your database name
+define('DB_NAME', 'kizito'); // Updated database name
 define('DB_USER', 'root'); // Your DB username
 define('DB_PASS', '');    // Your DB password (leave empty for default XAMPP root with no password)
 
