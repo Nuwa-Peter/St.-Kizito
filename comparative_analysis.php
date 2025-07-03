@@ -170,7 +170,7 @@ $subjectDisplayNames = [ /* As in summary_sheet.php - can be centralized later *
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">
                 <img src="images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2">
-                Maria Ow'embabazi P/S - Report System
+                ST KIZITO PREPARATORY SEMINARY RWEBISHURI - Report System
             </a>
             <div>
                 <a href="index.php" class="btn btn-outline-secondary me-2"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
@@ -367,7 +367,7 @@ $subjectDisplayNames = [ /* As in summary_sheet.php - can be centralized later *
 
     <footer class="mt-auto py-3 bg-light text-center">
         <div class="container">
-            <span class="text-muted">&copy; 2025 Maria Ow'embabazi Primary School - Good Christian, Good Citizen</span>
+            <span class="text-muted">&copy; <?php echo date('Y'); ?> ST KIZITO PREPARATORY SEMINARY RWEBISHURI - MANE NOBISCUM DOMINE</span>
         </div>
     </footer>
 

@@ -46,12 +46,12 @@ try {
         'default_font' => 'sans-serif' // Or 'helvetica', 'times' etc.
     ]);
 
-    $mpdf->SetTitle("User Manual - Maria Ow'embabazi P/S Report System");
-    $mpdf->SetAuthor("Maria Ow'embabazi Primary School");
+    $mpdf->SetTitle("User Manual - ST KIZITO PREPARATORY SEMINARY RWEBISHURI Report System");
+    $mpdf->SetAuthor("ST KIZITO PREPARATORY SEMINARY RWEBISHURI");
     $mpdf->SetCreator('Report Card System');
 
     // Add a header and footer
-    $mpdf->SetHeader('User Manual|Maria Ow\'embabazi P/S|{PAGENO}');
+    $mpdf->SetHeader('User Manual|ST KIZITO PREPARATORY SEMINARY RWEBISHURI|{PAGENO}');
     $mpdf->SetFooter('Generated on: {DATE j-m-Y H:i:s}||Page {PAGENO} of {nbpg}');
 
 
@@ -60,7 +60,7 @@ try {
     // We might need to adjust CSS in about.php or provide PDF-specific CSS here if issues arise.
     $mpdf->WriteHTML($htmlContent);
 
-    $pdfFileName = 'Maria_Owembabazi_PS_Report_System_User_Manual.pdf';
+    $pdfFileName = 'St_Kizito_PS_Rwebishuri_Report_System_User_Manual.pdf'; // Adjusted filename
     $mpdf->Output($pdfFileName, \Mpdf\Output\Destination::DOWNLOAD); // 'D' for download
     exit;
 

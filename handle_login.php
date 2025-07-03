@@ -1,5 +1,8 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
+    session_start();
+}
 require_once 'db_connection.php'; // Provides $pdo
 
 // Redirect to login if accessed directly without POST or if already logged in

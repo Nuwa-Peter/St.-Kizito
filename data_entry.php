@@ -1,6 +1,7 @@
 <?php
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
     session_start();
 }
 
@@ -32,7 +33,7 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report Card Generator - Maria Ow'embabazi Primary School</title>
+    <title>Report Card Generator - ST KIZITO PREPARATORY SEMINARY RWEBISHURI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="images/logo.png">
@@ -62,7 +63,7 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">
                 <img src="images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2" onerror="this.style.display='none';">
-                Maria Ow'embabazi P/S - Report System
+                ST KIZITO PREPARATORY SEMINARY RWEBISHURI - Report System
             </a>
             <div>
                 <a href="index.php" class="btn btn-outline-secondary me-2"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
@@ -241,7 +242,7 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
             </div></div> <!-- Close Overall Form Width Wrapper -->
         </form>
     </div>
-    <footer class="text-center mt-5 mb-3"><p>&copy; <span id="currentYear"></span> Maria Ow'embabazi Primary School - <i>Good Christian, Good Citizen</i></p></footer>
+    <footer class="text-center mt-5 mb-3"><p>&copy; <span id="currentYear"></span> ST KIZITO PREPARATORY SEMINARY RWEBISHURI - <i>MANE NOBISCUM DOMINE</i></p></footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/script.js"></script> <!-- js/script.js is assumed to be the same as before -->
 </body>

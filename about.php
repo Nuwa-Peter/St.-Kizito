@@ -1,6 +1,7 @@
 <?php
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
     session_start();
 }
 
@@ -168,7 +169,7 @@ date_default_timezone_set('Africa/Kampala');
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">
                 <img src="images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2" onerror="this.style.display='none';">
-                Maria Ow'embabazi P/S - Report System
+                ST KIZITO PREPARATORY SEMINARY RWEBISHURI - Report System
             </a>
             <div>
                 <a href="index.php" class="btn btn-outline-secondary me-2"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
@@ -193,7 +194,7 @@ date_default_timezone_set('Africa/Kampala');
 
         <section id="about-system">
             <h3 class="section-title">About the Report Card System (v8.0)</h3>
-            <p>This system is designed to streamline the generation and management of student academic reports for Maria Ow'embabazi Primary School. It allows for the importation of student scores from Excel files, calculation of termly performance metrics, and generation of printable PDF report cards and summary sheets.</p>
+            <p>This system is designed to streamline the generation and management of student academic reports for ST KIZITO PREPARATORY SEMINARY RWEBISHURI. It allows for the importation of student scores from Excel files, calculation of termly performance metrics, and generation of printable PDF report cards and summary sheets.</p>
             <p>Key features include:</p>
             <ul>
                 <li><strong>Unified Excel Templates (New in v8.0):</strong> Streamlined data import using a single Excel workbook per class level (Lower Primary P1-P3, Upper Primary P4-P7). Each subject's data is entered into a separate, pre-named sheet within the workbook.</li>
@@ -211,7 +212,7 @@ date_default_timezone_set('Africa/Kampala');
         <section id="school-contacts" style="text-align: center;">
             <h3 class="section-title">School Contacts</h3>
             <div style="margin-top: 1rem;">
-                <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 0.5rem;">Maria Ow'embabazi Primary School</p>
+                <p style="font-size: 1.2em; font-weight: bold; margin-bottom: 0.5rem;">ST KIZITO PREPARATORY SEMINARY RWEBISHURI</p>
                 <address style="font-style: normal; line-height: 1.6;">
                     P.O BOX 406, MBARARA<br>
                     Tel. 0700172858<br>
@@ -356,14 +357,14 @@ date_default_timezone_set('Africa/Kampala');
                 <li><strong>Peter Nuwahereza</strong> (nuwapeter2013@gmail.com)</li>
                 <li>with the assistance of an AI Agent.</li>
             </ul>
-            <p>We hope this system serves Maria Ow'embabazi Primary School effectively!</p>
+-            <p>We hope this system serves ST KIZITO PREPARATORY SEMINARY RWEBISHURI effectively!</p>
         </section>
 
     </div>
 
     <?php if (!defined('GENERATING_USER_MANUAL_PDF') || !GENERATING_USER_MANUAL_PDF): ?>
     <footer class="text-center mt-5 mb-3 p-3 non-printable" style="background-color: #f8f9fa;">
-        <p>&copy; <?php echo date('Y'); ?> Maria Ow'embabazi Primary School - <i>Good Christian, Good Citizen</i></p>
+        <p>&copy; <?php echo date('Y'); ?> ST KIZITO PREPARATORY SEMINARY RWEBISHURI - <i>MANE NOBISCUM DOMINE</i></p>
     </footer>
     <?php endif; ?>
 

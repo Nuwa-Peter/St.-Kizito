@@ -76,7 +76,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Report Archives - Maria Ow'embabazi P/S</title>
+    <title>View Report Archives - ST KIZITO PREPARATORY SEMINARY RWEBISHURI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -93,7 +93,7 @@ try {
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">
                 <img src="images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2" onerror="this.style.display='none';">
-                Maria Ow'embabazi P/S - Report System
+                ST KIZITO PREPARATORY SEMINARY RWEBISHURI - Report System
             </a>
             <div>
                 <a href="index.php" class="btn btn-outline-secondary me-2"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
@@ -202,7 +202,7 @@ try {
     </div>
 
     <footer class="text-center mt-5 mb-3 p-3 non-printable" style="background-color: #f8f9fa;">
-        <p>&copy; <?php echo date('Y'); ?> Maria Ow'embabazi Primary School - <i>Good Christian, Good Citizen</i></p>
+        <p>&copy; <?php echo date('Y'); ?> ST KIZITO PREPARATORY SEMINARY RWEBISHURI - <i>MANE NOBISCUM DOMINE</i></p>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

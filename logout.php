@@ -1,6 +1,7 @@
 <?php
 // Start session to access session variables
 if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
     session_start();
 }
 
@@ -37,7 +38,15 @@ session_destroy();
 // To display this, login.php needs to be able to show 'logout_message' or a generic success message.
 // For simplicity, we'll rely on login.php's existing $_SESSION['success_message'] if available,
 // or just redirect. Let's add a specific logout message.
-session_start(); // Need to start a new session to store the flash message
+if (session_status() === PHP_SESSION_NONE) { // Ensure session is started with the correct name
+    session_name('STKIZITO_SESSION');
+    session_start();
+} else {
+    // If session is already active (e.g. from previous part of script),
+    // ensure it's the one we want or re-initialize if name differs.
+    // However, given session_destroy() was just called, a new session_start() is typical.
+    // The check above should suffice.
+}
 $_SESSION['logout_message'] = "You have been successfully logged out.";
 
 

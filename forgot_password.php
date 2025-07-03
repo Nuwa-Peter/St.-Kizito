@@ -1,5 +1,6 @@
 <?php
 if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
     session_start();
 }
 // No other PHP logic needed here for this static message version.

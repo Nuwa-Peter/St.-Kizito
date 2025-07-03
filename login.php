@@ -1,5 +1,8 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
+    session_start();
+}
 $error_message = $_SESSION['login_error_message'] ?? null;
 unset($_SESSION['login_error_message']); // Clear error after displaying
 
@@ -17,13 +20,15 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Report System - Maria Ow'embabazi P/S</title>
+    <title>Login - Report System - ST KIZITO PREPARATORY SEMINARY RWEBISHURI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="css/style.css" rel="stylesheet"> <!-- Shared stylesheet for body background -->
     <style>
+        /* body background is now in css/style.css */
         body {
-            background-color: #e0f7fa; /* Light blue background */
+            /* background-color: #FFFACD; */ /* LemonChiffon - very light yellow - Moved to css/style.css */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -31,43 +36,68 @@ if (isset($_SESSION['user_id'])) {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .login-container {
-            background-color: #fff;
-            padding: 30px 40px; /* Increased padding */
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            background-color: #fff; /* White container */
+            padding: 35px 45px; /* Increased padding */
+            border-radius: 12px; /* Smoother radius */
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1); /* Enhanced shadow */
             width: 100%;
-            max-width: 420px; /* Slightly wider */
+            max-width: 450px; /* Slightly wider */
+            border-top: 5px solid #8B4513; /* Coffee brown top border accent */
         }
         .login-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px; /* More space */
         }
         .login-header img {
-            width: 80px; /* Larger logo */
-            margin-bottom: 15px;
+            width: 85px;
+            margin-bottom: 20px; /* More space below logo */
+            border-radius: 50%; /* Circular logo if desired, ensure image is suitable */
+            border: 3px solid #D2B48C; /* Tan border for logo */
         }
         .login-header h2 {
-            color: #0056b3; /* Darker blue for heading */
-            font-weight: 600;
+            color: #00008B; /* Dark Blue for heading */
+            font-weight: 700; /* Bolder */
+            font-size: 1.8rem; /* Larger heading */
+        }
+        .login-header p.text-muted {
+            color: #4A3B31 !important; /* Darker coffee for subtitle */
+            font-size: 0.95rem;
         }
         .form-floating label {
-            padding-left: 0.5rem; /* Align floating label better */
+            padding-left: 0.5rem;
         }
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            padding: 10px; /* Larger button padding */
+        .form-control:focus { /* Highlight focus with theme color */
+            border-color: #FFD700; /* Yellow border on focus */
+            box-shadow: 0 0 0 0.25rem rgba(255, 215, 0, 0.3); /* Yellow glow */
+        }
+        .btn-login { /* Custom class for login button */
+            background-color: #00008B; /* Dark Blue */
+            border-color: #00008B;
+            color: #fff;
+            padding: 12px;
             font-size: 1.1rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out;
         }
-        .btn-primary:hover {
-            background-color: #0069d9;
-            border-color: #0062cc;
+        .btn-login:hover {
+            background-color: #00005A; /* Darker Blue for hover */
+            border-color: #00005A;
         }
         .forgot-password-link {
             display: block;
             text-align: right;
-            margin-top: 10px;
+            margin-top: 12px;
             font-size: 0.9em;
+            color: #8B4513; /* Coffee brown link */
+        }
+        .forgot-password-link:hover {
+            color: #A0522D; /* Lighter coffee brown on hover */
+            text-decoration: underline;
+        }
+        .login-footer {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #4A3B31; /* Darker coffee text */
         }
     </style>
 </head>
@@ -76,7 +106,7 @@ if (isset($_SESSION['user_id'])) {
         <div class="login-header">
             <img src="images/logo.png" alt="School Logo" onerror="this.style.display='none';">
             <h2>School Report System</h2>
-            <p class="text-muted">Please sign in to continue</p>
+            <p class="text-muted">ST KIZITO PREPARATORY SEMINARY RWEBISHURI</p>
         </div>
 
         <?php if ($error_message): ?>
@@ -99,10 +129,10 @@ if (isset($_SESSION['user_id'])) {
                 <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
                 <label for="password"><i class="fas fa-lock me-2"></i>Password</label>
             </div>
-            <button class="w-100 btn btn-lg btn-primary" type="submit"><i class="fas fa-sign-in-alt me-2"></i>Sign In</button>
+            <button class="w-100 btn btn-lg btn-login" type="submit"><i class="fas fa-sign-in-alt me-2"></i>Sign In</button>
             <a href="forgot_password.php" class="forgot-password-link">Forgot Password?</a>
         </form>
-        <p class="mt-4 mb-3 text-muted text-center">&copy; <?php echo date('Y'); ?> Maria Ow'embabazi P/S</p>
+        <p class="mt-4 mb-3 text-muted text-center login-footer">&copy; <?php echo date('Y'); ?> ST KIZITO PREPARATORY SEMINARY RWEBISHURI - <i>MANE NOBISCUM DOMINE</i></p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

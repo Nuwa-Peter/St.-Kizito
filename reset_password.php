@@ -1,5 +1,8 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
+    session_start();
+}
 require_once 'db_connection.php';
 
 $token = $_GET['token'] ?? $_POST['token'] ?? null;

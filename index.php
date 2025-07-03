@@ -1,6 +1,7 @@
 <?php
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
+// Set a unique session name before starting the session
+if (session_status() === PHP_SESSION_NONE) { // Check if session is not already active
+    session_name('STKIZITO_SESSION');
     session_start();
 }
 
@@ -264,15 +265,7 @@ try {
                 <a href="index.php"><i class="fas fa-tachometer-alt"></i> Dashboard Home</a>
             </li>
             <li>
-                <a href="#templateSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-file-excel"></i> Download Template</a>
-                <ul class="collapse list-unstyled" id="templateSubmenu">
-                    <li>
-                        <a href="download_template.php?type=lower" style="padding-left: 30px;"><i class="fas fa-child fa-fw me-2"></i>Lower Primary</a>
-                    </li>
-                    <li>
-                        <a href="download_template.php?type=upper" style="padding-left: 30px;"><i class="fas fa-user-graduate fa-fw me-2"></i>Upper Primary</a>
-                    </li>
-                </ul>
+                <a href="download_template.php"><i class="fas fa-file-excel"></i> Download P5-P7 Marks Template</a>
             </li>
             <li>
                 <a href="data_entry.php"><i class="fas fa-edit"></i> Marks Entry</a> <!-- Was "Generate New Reports" -->

@@ -1,6 +1,6 @@
 # Report Card Generation System
 
-This system is designed to generate termly academic report cards for students at Maria Ow'embabazi Primary School.
+This system is designed to generate termly academic report cards for students at ST KIZITO PREPARATORY SEMINARY RWEBISHURI.
 
 ## Overview
 
