@@ -25,8 +25,9 @@ if (empty($username) || empty($password)) {
 }
 
 try {
-    $stmt = $pdo->prepare("SELECT id, username, password_hash, role FROM users WHERE username = :username OR email = :username_as_email LIMIT 1");
-    $stmt->execute([':username' => $username, ':username_as_email' => $username]); // Allow login with username or email
+    // Updated to only check username, as 'email' column is not in the new schema
+    $stmt = $pdo->prepare("SELECT id, username, password_hash, role FROM users WHERE username = :username LIMIT 1");
+    $stmt->execute([':username' => $username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password_hash'])) {
