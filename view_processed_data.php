@@ -1,6 +1,7 @@
 <?php
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
     session_start();
 }
 
@@ -54,13 +55,14 @@ if (!empty($studentsWithScores)) {
 
 // This map is for fallback if subject_name_full is not in the DB for some reason,
 // or for consistent display if needed. The primary source should be $details['subject_name_full'].
+// Updated to use uppercase keys and new P5-P7 subject set.
 $subjectDisplayNames = [
-    'english' => 'English', 'mtc' => 'Mathematics (MTC)', 'science' => 'Science',
-    'sst' => 'Social Studies (SST)', 'kiswahili' => 'Kiswahili',
-    're' => 'Religious Education (R.E)', 'lit1' => 'Literacy I',
-    'lit2' => 'Literacy II', 'local_lang' => 'Local Language'
+    'ENG' => 'ENGLISH',
+    'MTC' => 'MATHEMATICS',
+    'SCI' => 'SCIENCE',
+    'SST' => 'SOCIAL STUDIES',
+    'RE'  => 'RELIGIOUS EDUCATION'
 ];
-
 
 ?>
 <!DOCTYPE html>

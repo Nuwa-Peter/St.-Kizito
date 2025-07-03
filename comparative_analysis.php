@@ -1,6 +1,7 @@
 <?php
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
     session_start();
 }
 
@@ -35,7 +36,7 @@ try {
     $stmtStudents = $pdo->query(
         "SELECT DISTINCT s.id, s.student_name, s.lin_no
          FROM students s
-         JOIN student_report_summary srs ON s.id = srs.student_id
+         JOIN student_term_summaries srs ON s.id = srs.student_id -- Renamed table
          ORDER BY s.student_name ASC"
     );
     $allStudentsWithProcessedData = $stmtStudents->fetchAll(PDO::FETCH_ASSOC);
@@ -53,12 +54,12 @@ if (isset($_GET['student_id']) && filter_var($_GET['student_id'], FILTER_VALIDAT
 
     if ($studentDetails) {
         // Fetch batches this student has data in
-        $sqlBatches = "SELECT DISTINCT rbs.id as batch_id, c.class_name, ay.year_name, t.term_name
-                       FROM report_batch_settings rbs
-                       JOIN student_report_summary srs ON rbs.id = srs.report_batch_id
-                       JOIN classes c ON rbs.class_id = c.id
-                       JOIN academic_years ay ON rbs.academic_year_id = ay.id
-                       JOIN terms t ON rbs.term_id = t.id
+        $sqlBatches = "SELECT DISTINCT rb.id as batch_id, c.class_name, ay.year_name, t.term_name
+                       FROM report_batches rb -- Renamed table
+                       JOIN student_term_summaries srs ON rb.id = srs.report_batch_id -- Renamed table
+                       JOIN classes c ON rb.class_id = c.id
+                       JOIN academic_years ay ON rb.academic_year_id = ay.id
+                       JOIN terms t ON rb.term_id = t.id
                        WHERE srs.student_id = :student_id
                        ORDER BY ay.year_name DESC, t.id DESC";
         $stmtBatches = $pdo->prepare($sqlBatches);
@@ -87,7 +88,7 @@ if ($selectedStudentId && isset($_GET['batch_id']) && filter_var($_GET['batch_id
 
     if ($batchDetails) {
         // Validate this student actually has data in this batch
-        $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM student_report_summary WHERE student_id = :student_id AND report_batch_id = :batch_id");
+        $stmtCheck = $pdo->prepare("SELECT COUNT(*) FROM student_term_summaries WHERE student_id = :student_id AND report_batch_id = :batch_id"); // Renamed table
         $stmtCheck->execute([':student_id' => $selectedStudentId, ':batch_id' => $selectedBatchId]);
         if ($stmtCheck->fetchColumn() > 0) {
             $comparisonDataSingleBatch = getStudentScoresForBatchDetailed($pdo, $selectedStudentId, $selectedBatchId);
@@ -135,12 +136,15 @@ if ($selectedStudentId && isset($_GET['subject_id_trend']) && filter_var($_GET['
     }
 }
 
-
-$subjectDisplayNames = [ /* As in summary_sheet.php - can be centralized later */
-    'english' => 'English', 'mtc' => 'Mathematics (MTC)', 'science' => 'Science',
-    'sst' => 'Social Studies (SST)', 'kiswahili' => 'Kiswahili',
-    're' => 'Religious Education (R.E)', 'lit1' => 'Literacy I',
-    'lit2' => 'Literacy II', 'local_lang' => 'Local Language'
+// Updated subjectDisplayNames to use new subject codes (matching kizito_schema.sql)
+// and to ensure "ENGLISH" is used for 'ENG'.
+$subjectDisplayNames = [
+    'ENG' => 'ENGLISH',
+    'MTC' => 'MATHEMATICS',
+    'SCI' => 'SCIENCE',
+    'SST' => 'SOCIAL STUDIES',
+    'RE'  => 'RELIGIOUS EDUCATION'
+    // Obsolete subjects removed
 ];
 
 ?>

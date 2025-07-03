@@ -1,6 +1,7 @@
 <?php
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
     session_start();
 }
 
@@ -42,8 +43,8 @@ if (!$batchSettingsData) {
     exit;
 }
 
-// Student IDs for the batch (fetch from student_report_summary as it implies calculations are done)
-$stmtStudentIds = $pdo->prepare("SELECT student_id FROM student_report_summary WHERE report_batch_id = :batch_id ORDER BY student_id");
+// Student IDs for the batch (fetch from student_term_summaries as it implies calculations are done)
+$stmtStudentIds = $pdo->prepare("SELECT student_id FROM student_term_summaries WHERE report_batch_id = :batch_id ORDER BY student_id"); // Renamed table
 $stmtStudentIds->execute([':batch_id' => $batch_id]);
 $studentIdsInBatch = $stmtStudentIds->fetchAll(PDO::FETCH_COLUMN);
 
@@ -53,25 +54,29 @@ if (empty($studentIdsInBatch)) {
     exit;
 }
 
-$teacherInitials = $_SESSION['current_teacher_initials'] ?? [];
+$teacherInitials = $_SESSION['current_teacher_initials'] ?? []; // Ensure keys are uppercase e.g., ENG, MTC
 
 $classNameForBatch = $batchSettingsData['class_name'];
-$isP4_P7_batch = in_array($classNameForBatch, ['P4', 'P5', 'P6', 'P7']);
-$isP1_P3_batch = in_array($classNameForBatch, ['P1', 'P2', 'P3']);
-$expectedSubjectKeysForClass = [];
-if ($isP4_P7_batch) {
-    $expectedSubjectKeysForClass = ['english', 'mtc', 'science', 'sst', 'kiswahili'];
-} elseif ($isP1_P3_batch) {
-    $expectedSubjectKeysForClass = ['english', 'mtc', 're', 'lit1', 'lit2', 'local_lang'];
+// System is P5-P7 only.
+if (!in_array($classNameForBatch, ['P5', 'P6', 'P7'])) {
+    // This should ideally not happen if batch creation/selection is also P5-P7 restricted.
+    $_SESSION['error_message'] = "PDF Generation Error: Invalid class '$classNameForBatch' for P5-P7 system.";
+    header('Location: index.php');
+    exit;
 }
 
+// P5-P7 subjects - use uppercase codes consistent with run_calculations.php and report_card.php
+$expectedSubjectKeysForClass = ['ENG', 'MTC', 'SCI', 'SST', 'RE'];
+
+// Ensure this map uses the same uppercase keys as $expectedSubjectKeysForClass
 $subjectDisplayNames = [
-    'english' => 'English', 'mtc' => 'Mathematics (MTC)', 'science' => 'Science',
-    'sst' => 'Social Studies (SST)', 'kiswahili' => 'Kiswahili',
-    're' => 'Religious Education (R.E)', 'lit1' => 'Literacy I',
-    'lit2' => 'Literacy II', 'local_lang' => 'Local Language'
+    'ENG' => 'ENGLISH',
+    'MTC' => 'MATHEMATICS',
+    'SCI' => 'SCIENCE',
+    'SST' => 'SOCIAL STUDIES',
+    'RE'  => 'RELIGIOUS EDUCATION'
 ];
-$gradingScaleForP4P7Display = [
+$gradingScaleForP4P7Display = [ // This scale is still used for P5-P7
     'D1' => '90-100', 'D2' => '80-89', 'C3' => '70-79', 'C4' => '60-69',
     'C5' => '55-59', 'C6' => '50-54', 'P7' => '45-49', 'P8' => '40-44', 'F9' => '0-39'
 ];
@@ -92,7 +97,7 @@ try {
 
     $pdfFileName = 'Report_Cards_' . preg_replace('/[^a-zA-Z0-9_-]/', '_', $batchSettingsData['class_name']) . '_' . preg_replace('/[^a-zA-Z0-9_-]/', '_', $batchSettingsData['term_name']) . '_' . $batchSettingsData['year_name'] . '.pdf';
     $mpdf->SetTitle('Report Cards - ' . $batchSettingsData['class_name'] . ' Term ' . $batchSettingsData['term_name'] . ' ' . $batchSettingsData['year_name']);
-    $mpdf->SetAuthor("MARIA OW'EMBABAZI PRIMARY SCHOOL");
+    $mpdf->SetAuthor("ST KIZITO PREPARATORY SEMINARY RWEBISHURI");
     $mpdf->SetCreator('Report Card System');
 
     $firstPage = true; // Initialize flag for first page handling
@@ -124,16 +129,29 @@ try {
         }
         $firstPage = false; // This must be outside the if, to correctly manage $firstPage state for next iteration
 
+        // Fetch student-specific summary data for the report card
+        $studentSummaryData = getStudentSummaryAndDetailsForReport($pdo, $student_id, $batch_id); // Revamped DAL function
+        if (!$studentSummaryData) {
+            throw new Exception("Could not fetch student summary data for Student ID: $student_id, Batch ID: $batch_id.");
+        }
+
         $sessionKeyForEnrichedData = 'enriched_students_data_for_batch_' . $batch_id;
         if (!isset($_SESSION[$sessionKeyForEnrichedData][$student_id])) {
             throw new Exception("Enriched student data not found in session for student ID $student_id and batch ID $batch_id. Please run calculations first.");
         }
         $currentStudentEnrichedData = $_SESSION[$sessionKeyForEnrichedData][$student_id];
 
-        // $pdo, $batch_id, $student_id are defined.
-        // $currentStudentEnrichedData is fetched.
-        // $teacherInitials, $subjectDisplayNames, $gradingScaleForP4P7Display, $expectedSubjectKeysForClass are defined.
-        // These are all the variables report_card.php expects.
+        // Variables report_card.php expects:
+        // $pdo (available)
+        // $batch_id (available)
+        // $student_id (available from loop)
+        // $currentStudentEnrichedData (fetched from session)
+        // $studentSummaryData (NEWLY FETCHED for this student)
+        // $teacherInitials (globally defined for batch)
+        // $subjectDisplayNames (globally defined)
+        // $gradingScaleForP4P7Display (globally defined)
+        // $expectedSubjectKeysForClass (globally defined for P5-P7)
+        // $totalStudentsInClassForP1P3 (obsolete - not used by P5-P7 logic in report_card.php)
 
         ob_start();
         include 'report_card.php';
@@ -151,9 +169,9 @@ try {
         $_SESSION['user_id'] ?? null,
         $_SESSION['username'] ?? 'System',
         'REPORT_GENERATED',
-        $logDescription,
-        'batch',
-        $batch_id
+        $logDescription
+        // ip_address is null by default in logActivity signature
+        // entity_type and entity_id are removed from logActivity signature
     );
 
     $mpdf->Output($pdfFileName, $outputMode);

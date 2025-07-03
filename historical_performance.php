@@ -1,6 +1,7 @@
 <?php
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
+    session_name('STKIZITO_SESSION');
     session_start();
 }
 
@@ -28,7 +29,7 @@ try {
     $stmt = $pdo->query(
         "SELECT DISTINCT s.id, s.student_name, s.lin_no
          FROM students s
-         JOIN student_report_summary srs ON s.id = srs.student_id
+         JOIN student_term_summaries srs ON s.id = srs.student_id -- Renamed table
          ORDER BY s.student_name ASC"
     );
     $allStudentsWithProcessedData = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -61,12 +62,7 @@ if (isset($_GET['student_id']) && filter_var($_GET['student_id'], FILTER_VALIDAT
     }
 }
 
-$subjectDisplayNames = [ /* As in summary_sheet.php - can be centralized later */
-    'english' => 'English', 'mtc' => 'Mathematics (MTC)', 'science' => 'Science',
-    'sst' => 'Social Studies (SST)', 'kiswahili' => 'Kiswahili',
-    're' => 'Religious Education (R.E)', 'lit1' => 'Literacy I',
-    'lit2' => 'Literacy II', 'local_lang' => 'Local Language'
-];
+// $subjectDisplayNames array is not used in this file, can be removed.
 
 ?>
 <!DOCTYPE html>
@@ -140,64 +136,49 @@ $subjectDisplayNames = [ /* As in summary_sheet.php - can be centralized later *
 
             <div class="table-responsive mb-4">
                 <table class="table table-striped table-hover table-bordered">
-                    <thead class="table-light"> <!-- Changed from table-dark to table-light -->
+                    <thead class="table-light">
                         <tr>
                             <th>Academic Year</th>
                             <th>Term</th>
                             <th>Class</th>
-                            <th>Avg. Score (P1-P3)</th>
-                            <th>Total Score (P1-P3)</th>
-                            <th>Position (P1-P3)</th>
-                            <th>Aggregates (P4-P7)</th>
-                            <th>Division (P4-P7)</th>
+                            <th>Aggregate</th>
+                            <th>Division</th>
+                            <th>Average Score (%)</th>
+                            <th>Position</th>
                             <th>Class Teacher's Remark</th>
                             <th>Head Teacher's Remark</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        $p1p3_avg_scores_for_chart = [];
-                        $p4p7_aggregates_for_chart = [];
+                        // Variables for chart data (P5-P7 uses aggregates and average scores)
+                        $aggregate_points_for_chart = [];
+                        $average_scores_for_chart = [];
                         $chart_labels = [];
 
                         foreach ($studentHistoricalData as $record):
-                            $isP1P3 = in_array($record['class_name'], ['P1', 'P2', 'P3']);
-                            $isP4P7 = in_array($record['class_name'], ['P4', 'P5', 'P6', 'P7']);
+                            // All records are now for P5-P7 like classes
                             $chart_labels[] = $record['year_name'] . ' T' . $record['term_name'] . ' (' . $record['class_name'] . ')';
-
-                            if ($isP1P3) {
-                                $p1p3_avg_scores_for_chart[] = is_numeric($record['p1p3_average_eot_score']) ? (float)$record['p1p3_average_eot_score'] : null;
-                                $p4p7_aggregates_for_chart[] = null; // No aggregate for P1-P3
-                            } elseif ($isP4P7) {
-                                $p4p7_aggregates_for_chart[] = is_numeric($record['p4p7_aggregate_points']) ? (int)$record['p4p7_aggregate_points'] : null;
-                                $p1p3_avg_scores_for_chart[] = null; // No average score focus for P4-P7 chart in this context
-                            } else {
-                                $p1p3_avg_scores_for_chart[] = null;
-                                $p4p7_aggregates_for_chart[] = null;
-                            }
+                            $aggregate_points_for_chart[] = is_numeric($record['aggregate_points']) ? (int)$record['aggregate_points'] : null;
+                            $average_scores_for_chart[] = is_numeric($record['average_score']) ? (float)$record['average_score'] : null;
                         ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($record['year_name']); ?></td>
                                 <td><?php echo htmlspecialchars($record['term_name']); ?></td>
                                 <td><?php echo htmlspecialchars($record['class_name']); ?></td>
-                                <td><?php echo $isP1P3 ? htmlspecialchars($record['p1p3_average_eot_score'] ?? 'N/A') : 'N/A'; ?></td>
-                                <td><?php echo $isP1P3 ? htmlspecialchars($record['p1p3_total_eot_score'] ?? 'N/A') : 'N/A'; ?></td>
+                                <td><?php echo htmlspecialchars($record['aggregate_points'] ?? 'N/A'); ?></td>
+                                <td><?php echo htmlspecialchars($record['division'] ?? 'N/A'); ?></td>
+                                <td><?php echo htmlspecialchars($record['average_score'] ?? 'N/A'); ?></td>
                                 <td>
                                     <?php
-                                    if ($isP1P3) {
-                                        echo htmlspecialchars($record['p1p3_position_in_class'] ?? 'N/A');
-                                        if (!empty($record['p1p3_total_students_in_class'])) {
-                                            echo ' / ' . htmlspecialchars($record['p1p3_total_students_in_class']);
+                                        echo htmlspecialchars($record['position_in_class'] ?? 'N/A');
+                                        if (!empty($record['total_students_in_class'])) {
+                                            echo ' / ' . htmlspecialchars($record['total_students_in_class']);
                                         }
-                                    } else {
-                                        echo 'N/A';
-                                    }
                                     ?>
                                 </td>
-                                <td><?php echo $isP4P7 ? htmlspecialchars($record['p4p7_aggregate_points'] ?? 'N/A') : 'N/A'; ?></td>
-                                <td><?php echo $isP4P7 ? htmlspecialchars($record['p4p7_division'] ?? 'N/A') : 'N/A'; ?></td>
-                                <td style="font-size: 0.85em;"><?php echo nl2br(htmlspecialchars($record['auto_classteachers_remark_text'] ?? 'N/A')); ?></td>
-                                <td style="font-size: 0.85em;"><?php echo nl2br(htmlspecialchars($record['auto_headteachers_remark_text'] ?? 'N/A')); ?></td>
+                                <td style="font-size: 0.85em;"><?php echo nl2br(htmlspecialchars($record['class_teacher_remark'] ?? 'N/A')); ?></td>
+                                <td style="font-size: 0.85em;"><?php echo nl2br(htmlspecialchars($record['head_teacher_remark'] ?? 'N/A')); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -205,25 +186,24 @@ $subjectDisplayNames = [ /* As in summary_sheet.php - can be centralized later *
             </div>
 
             <?php
-                // Prepare chart data - filter out terms where student might not have relevant data
-                $validP1P3DataForChart = array_filter($p1p3_avg_scores_for_chart, function($value) { return $value !== null; });
-                $validP4P7DataForChart = array_filter($p4p7_aggregates_for_chart, function($value) { return $value !== null; });
+                // Prepare chart data
+                $validAggregateDataForChart = array_filter($aggregate_points_for_chart, function($value) { return $value !== null; });
+                $validAverageScoreDataForChart = array_filter($average_scores_for_chart, function($value) { return $value !== null; });
             ?>
 
-            <?php if (count($validP1P3DataForChart) > 1): ?>
+            <?php if (count($validAverageScoreDataForChart) > 1): ?>
             <div class="chart-container">
-                <h5>P1-P3 Average Score Trend</h5>
-                <canvas id="p1p3AvgScoreChart"></canvas>
+                <h5>Overall Average Score Trend (%)</h5>
+                <canvas id="averageScoreChart"></canvas>
             </div>
             <?php endif; ?>
 
-            <?php if (count($validP4P7DataForChart) > 1): ?>
+            <?php if (count($validAggregateDataForChart) > 1): ?>
             <div class="chart-container">
-                <h5>P4-P7 Aggregate Points Trend</h5>
-                <canvas id="p4p7AggregateChart"></canvas>
+                <h5>Aggregate Points Trend</h5>
+                <canvas id="aggregatePointsChart"></canvas>
             </div>
             <?php endif; ?>
-
 
         <?php elseif ($selectedStudentId && (empty($studentHistoricalData) || !$studentDetails)): ?>
             <div class="alert alert-warning mt-4">
@@ -249,27 +229,26 @@ $subjectDisplayNames = [ /* As in summary_sheet.php - can be centralized later *
 document.addEventListener('DOMContentLoaded', function () {
     const chartLabels = <?php echo json_encode($chart_labels ?? []); ?>;
 
-    <?php if (!empty($validP1P3DataForChart) && count($validP1P3DataForChart) > 1): ?>
-    const p1p3AvgScores = <?php echo json_encode(array_values($p1p3_avg_scores_for_chart)); ?>;
-    // Filter labels for P1-P3 chart to match available data points
-    const p1p3ChartLabels = chartLabels.filter((_, index) => <?php echo json_encode($p1p3_avg_scores_for_chart); ?>[index] !== null);
-    const p1p3DataPoints = p1p3AvgScores.filter(value => value !== null);
+    <?php if (!empty($validAverageScoreDataForChart) && count($validAverageScoreDataForChart) > 1): ?>
+    const averageScores = <?php echo json_encode(array_values($average_scores_for_chart)); ?>;
+    const averageScoreChartLabels = chartLabels.filter((_, index) => <?php echo json_encode($average_scores_for_chart); ?>[index] !== null);
+    const averageScoreDataPoints = averageScores.filter(value => value !== null);
 
-    if (p1p3DataPoints.length > 1) {
-        const p1p3Ctx = document.getElementById('p1p3AvgScoreChart');
-        if (p1p3Ctx) {
-            new Chart(p1p3Ctx, {
+    if (averageScoreDataPoints.length > 1) {
+        const avgScoreCtx = document.getElementById('averageScoreChart');
+        if (avgScoreCtx) {
+            new Chart(avgScoreCtx, {
                 type: 'line',
                 data: {
-                    labels: p1p3ChartLabels,
+                    labels: averageScoreChartLabels,
                     datasets: [{
-                        label: 'P1-P3 Average EOT Score (%)',
-                        data: p1p3DataPoints,
+                        label: 'Overall Average Score (%)',
+                        data: averageScoreDataPoints,
                         borderColor: 'rgb(75, 192, 192)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         fill: false,
                         tension: 0.1,
-                        spanGaps: true // Connect lines even if some data points are null in the original full array
+                        spanGaps: true
                     }]
                 },
                 options: {
@@ -277,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     maintainAspectRatio: false,
                     scales: {
                         y: {
-                            beginAtZero: false, // Scores might not start at 0
+                            beginAtZero: false,
                             suggestedMin: 40,
                             suggestedMax: 100
                         }
@@ -287,12 +266,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             callbacks: {
                                 label: function(context) {
                                     let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y.toFixed(2) + '%';
-                                    }
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += context.parsed.y.toFixed(2) + '%'; }
                                     return label;
                                 }
                             }
@@ -304,22 +279,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     <?php endif; ?>
 
-    <?php if (!empty($validP4P7DataForChart) && count($validP4P7DataForChart) > 1): ?>
-    const p4p7Aggregates = <?php echo json_encode(array_values($p4p7_aggregates_for_chart)); ?>;
-    // Filter labels for P4-P7 chart
-    const p4p7ChartLabels = chartLabels.filter((_, index) => <?php echo json_encode($p4p7_aggregates_for_chart); ?>[index] !== null);
-    const p4p7DataPoints = p4p7Aggregates.filter(value => value !== null);
+    <?php if (!empty($validAggregateDataForChart) && count($validAggregateDataForChart) > 1): ?>
+    const aggregatePoints = <?php echo json_encode(array_values($aggregate_points_for_chart)); ?>;
+    const aggregatePointsChartLabels = chartLabels.filter((_, index) => <?php echo json_encode($aggregate_points_for_chart); ?>[index] !== null);
+    const aggregateDataPoints = aggregatePoints.filter(value => value !== null);
 
-    if (p4p7DataPoints.length > 1) {
-        const p4p7Ctx = document.getElementById('p4p7AggregateChart');
-        if (p4p7Ctx) {
-            new Chart(p4p7Ctx, {
+    if (aggregateDataPoints.length > 1) {
+        const aggPointsCtx = document.getElementById('aggregatePointsChart');
+        if (aggPointsCtx) {
+            new Chart(aggPointsCtx, {
                 type: 'line',
                 data: {
-                    labels: p4p7ChartLabels,
+                    labels: aggregatePointsChartLabels,
                     datasets: [{
-                        label: 'P4-P7 Aggregate Points',
-                        data: p4p7DataPoints,
+                        label: 'Aggregate Points',
+                        data: aggregateDataPoints,
                         borderColor: 'rgb(255, 99, 132)',
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         fill: false,
@@ -331,11 +305,10 @@ document.addEventListener('DOMContentLoaded', function () {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { // Aggregates are better when lower
-                            reverse: true,
-                            beginAtZero: false, // Aggregates don't start at 0
-                            suggestedMin: 4, // Best possible aggregate
-                            // suggestedMax: 36 // Worst typical aggregate for Div U
+                        y: {
+                            reverse: true, // Lower aggregates are better
+                            beginAtZero: false,
+                            suggestedMin: 4,
                         }
                     },
                      plugins: {
@@ -343,12 +316,8 @@ document.addEventListener('DOMContentLoaded', function () {
                             callbacks: {
                                 label: function(context) {
                                     let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y;
-                                    }
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += context.parsed.y; }
                                     return label;
                                 }
                             }
