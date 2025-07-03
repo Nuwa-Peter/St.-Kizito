@@ -100,7 +100,7 @@ function getStudentsWithScoresForBatch(PDO $pdo, int $reportBatchId): array {
  */
 function getStudentReportSummariesForBatch(PDO $pdo, int $reportBatchId): array {
     $summaries = [];
-    $sql = "SELECT * FROM student_report_summary WHERE report_batch_id = :batch_id";
+    $sql = "SELECT * FROM student_term_summaries WHERE report_batch_id = :batch_id"; // Renamed table
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':batch_id' => $reportBatchId]);
     $results = $stmt->fetchAll();
@@ -126,31 +126,22 @@ function saveStudentReportSummary(PDO $pdo, array $summaryData): bool {
         return false;
     }
 
-    // Check if a summary already exists
-    $stmtCheck = $pdo->prepare("SELECT id FROM student_report_summary WHERE student_id = :student_id AND report_batch_id = :report_batch_id");
+    // Check if a summary already exists in the new table
+    $stmtCheck = $pdo->prepare("SELECT id FROM student_term_summaries WHERE student_id = :student_id AND report_batch_id = :report_batch_id");
     $stmtCheck->execute([
         ':student_id' => $summaryData['student_id'],
         ':report_batch_id' => $summaryData['report_batch_id']
     ]);
     $existingId = $stmtCheck->fetchColumn();
 
+    // Fields based on the new 'student_term_summaries' table
     $fields = [
         'student_id', 'report_batch_id',
-        'p4p7_aggregate_points', 'p4p7_division',
-        'p1p3_total_eot_score', 'p1p3_average_eot_score',
-        'p1p3_position_in_class', 'p1p3_total_students_in_class',
-        'auto_classteachers_remark_text', 'auto_headteachers_remark_text',
-        'p1p3_total_bot_score', 'p1p3_position_total_bot',
-        'p1p3_total_mot_score', 'p1p3_position_total_mot',
-        'p1p3_position_total_eot',
-        // ADDED/VERIFY New fields for P1-P3 overall BOT/MOT averages
-        'p1p3_average_bot_score',
-        'p1p3_average_mot_score',
-        // ADD P4-P7 BOT/MOT fields
-        'p4p7_aggregate_bot_score',
-        'p4p7_division_bot',
-        'p4p7_aggregate_mot_score',
-        'p4p7_division_mot'
+        'aggregate_points', 'division',
+        'average_score',
+        'position_in_class', 'total_students_in_class',
+        'class_teacher_remark', 'head_teacher_remark'
+        // created_at and updated_at have defaults in the new schema, so not explicitly managed here unless needed.
     ];
 
     $dataToSave = [];
@@ -182,7 +173,7 @@ function saveStudentReportSummary(PDO $pdo, array $summaryData): bool {
         }
         if (empty($updateParts)) return true; // Nothing to update
 
-        $sql = "UPDATE student_report_summary SET " . implode(', ', $updateParts) .
+        $sql = "UPDATE student_term_summaries SET " . implode(', ', $updateParts) . // Renamed table
                " WHERE id = :existing_id";
 
         // Ensure existing_id is part of the array passed to execute() for the WHERE clause
@@ -210,7 +201,7 @@ function saveStudentReportSummary(PDO $pdo, array $summaryData): bool {
     } else { // Insert
         $colsString = implode(', ', array_map(function($col) { return "`$col`"; }, array_keys($dataToSave)));
         $placeholdersString = implode(', ', array_map(function($col) { return ":$col"; }, array_keys($dataToSave)));
-        $sql = "INSERT INTO student_report_summary ($colsString) VALUES ($placeholdersString)";
+        $sql = "INSERT INTO student_term_summaries ($colsString) VALUES ($placeholdersString)"; // Renamed table
         $stmt = $pdo->prepare($sql);
         // For INSERT, $dataToSave is still passed to execute directly
     }
@@ -265,46 +256,8 @@ function saveStudentReportSummary(PDO $pdo, array $summaryData): bool {
     }
 }
 
-/**
- * Updates the last dismissed admin activity timestamp for a user.
- *
- * @param PDO $pdo The PDO database connection object.
- * @param int $userId The ID of the user.
- * @param string $timestamp The timestamp to set.
- * @return bool True on success, false on failure.
- */
-function updateUserLastDismissedAdminActivityTimestamp(PDO $pdo, int $userId, string $timestamp): bool {
-    // Assuming 'users' table has a column 'last_dismissed_admin_activity_ts DATETIME NULL'
-    $sql = "UPDATE users SET last_dismissed_admin_activity_ts = :timestamp WHERE id = :user_id";
-    try {
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':timestamp' => $timestamp, ':user_id' => $userId]);
-        return true; // Or $stmt->rowCount() > 0 if you want to confirm a change happened
-    } catch (PDOException $e) {
-        error_log("DAL Error: updateUserLastDismissedAdminActivityTimestamp failed for User ID $userId. Error: " . $e->getMessage());
-        return false;
-    }
-}
-
-/**
- * Fetches the last dismissed admin activity timestamp for a user.
- *
- * @param PDO $pdo The PDO database connection object.
- * @param int $userId The ID of the user.
- * @return string|null The timestamp string or null if not set/error.
- */
-function getUserLastDismissedAdminActivityTimestamp(PDO $pdo, int $userId): ?string {
-    $sql = "SELECT last_dismissed_admin_activity_ts FROM users WHERE id = :user_id";
-    try {
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':user_id' => $userId]);
-        $result = $stmt->fetchColumn();
-        return $result ?: null; // Return null if false (not found) or null
-    } catch (PDOException $e) {
-        error_log("DAL Error: getUserLastDismissedAdminActivityTimestamp failed for User ID $userId. Error: " . $e->getMessage());
-        return null;
-    }
-}
+// Function updateUserLastDismissedAdminActivityTimestamp REMOVED as 'last_dismissed_admin_activity_ts' column is not in the new 'users' table schema.
+// Function getUserLastDismissedAdminActivityTimestamp REMOVED for the same reason.
 
 /**
  * Fetches teacher initials for specific subjects for a given report batch.
@@ -332,8 +285,10 @@ function getUserLastDismissedAdminActivityTimestamp(PDO $pdo, int $userId): ?str
  * @return array|false Associative array of the merged summary and student details, or false if not found.
  */
 function getStudentSummaryAndDetailsForReport(PDO $pdo, int $studentId, int $reportBatchId): array|false {
+    // Selecting from student_term_summaries and students (no photo_filename)
+    // srs.* will get all fields from the new student_term_summaries table
     $sql = "SELECT srs.*, s.student_name, s.lin_no
-            FROM student_report_summary srs
+            FROM student_term_summaries srs
             JOIN students s ON srs.student_id = s.id
             WHERE srs.student_id = :student_id AND srs.report_batch_id = :report_batch_id";
     $stmt = $pdo->prepare($sql);
@@ -350,7 +305,7 @@ function getStudentSummaryAndDetailsForReport(PDO $pdo, int $studentId, int $rep
  */
 function getAllStudentSummariesForBatchWithName(PDO $pdo, int $reportBatchId): array {
     $sql = "SELECT srs.*, s.student_name
-            FROM student_report_summary srs
+            FROM student_term_summaries srs -- Renamed table
             JOIN students s ON srs.student_id = s.id
             WHERE srs.report_batch_id = :report_batch_id
             ORDER BY s.student_name ASC"; // Default order, can be adjusted
@@ -382,11 +337,11 @@ function getAllScoresWithGradesForBatch(PDO $pdo, int $reportBatchId): array {
  * @return array List of distinct batches.
  */
 function getAllProcessedBatches(PDO $pdo): array {
-    $sql = "SELECT DISTINCT rbs.id as batch_id, c.class_name, ay.year_name, t.term_name
-            FROM report_batch_settings rbs
-            JOIN classes c ON rbs.class_id = c.id
-            JOIN academic_years ay ON rbs.academic_year_id = ay.id
-            JOIN terms t ON rbs.term_id = t.id
+    $sql = "SELECT DISTINCT rb.id as batch_id, c.class_name, ay.year_name, t.term_name
+            FROM report_batches rb -- Renamed table
+            JOIN classes c ON rb.class_id = c.id
+            JOIN academic_years ay ON rb.academic_year_id = ay.id
+            JOIN terms t ON rb.term_id = t.id
             ORDER BY ay.year_name DESC, t.term_name ASC, c.class_name ASC";
     $stmt = $pdo->query($sql);
     return $stmt->fetchAll();
@@ -466,16 +421,17 @@ function upsertStudent(PDO $pdo, string $studentName, ?string $linNo): ?int {
  * @param float|null $botScore
  * @param float|null $motScore
  * @param float|null $eotScore
+ * @param string|null $eotRemark The subject-specific end-of-term remark.
  * @return bool True on success, false on failure.
  */
-function upsertScore(PDO $pdo, int $reportBatchId, int $studentId, int $subjectId, ?float $botScore, ?float $motScore, ?float $eotScore): bool {
-    // Removed created_at and updated_at as they are likely not in the user's scores table schema
-    $sql = "INSERT INTO scores (report_batch_id, student_id, subject_id, bot_score, mot_score, eot_score)
-            VALUES (:report_batch_id, :student_id, :subject_id, :bot_score, :mot_score, :eot_score)
+function upsertScore(PDO $pdo, int $reportBatchId, int $studentId, int $subjectId, ?float $botScore, ?float $motScore, ?float $eotScore, ?string $eotRemark = null): bool {
+    $sql = "INSERT INTO scores (report_batch_id, student_id, subject_id, bot_score, mot_score, eot_score, eot_remark)
+            VALUES (:report_batch_id, :student_id, :subject_id, :bot_score, :mot_score, :eot_score, :eot_remark)
             ON DUPLICATE KEY UPDATE
                 bot_score = VALUES(bot_score),
                 mot_score = VALUES(mot_score),
-                eot_score = VALUES(eot_score)";
+                eot_score = VALUES(eot_score),
+                eot_remark = VALUES(eot_remark)";
     try {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
@@ -484,11 +440,12 @@ function upsertScore(PDO $pdo, int $reportBatchId, int $studentId, int $subjectI
             ':subject_id' => $subjectId,
             ':bot_score' => $botScore,
             ':mot_score' => $motScore,
-            ':eot_score' => $eotScore
+            ':eot_score' => $eotScore,
+            ':eot_remark' => $eotRemark
         ]);
         return $stmt->rowCount() > 0; // Returns true if a row was inserted or updated
     } catch (PDOException $e) {
-        error_log("DAL Error: upsertScore failed. Batch: $reportBatchId, Student: $studentId, Subject: $subjectId. Error: " . $e->getMessage());
+        error_log("DAL Error: upsertScore failed. Batch: $reportBatchId, Student: $studentId, Subject: $subjectId, Remark: $eotRemark. Error: " . $e->getMessage());
         // You might want to check $e->errorInfo[1] for specific error codes like 1062 for duplicate if not using ON DUPLICATE KEY
         return false;
     }
@@ -677,12 +634,12 @@ function logActivity(
     string $username,
     string $actionType,
     string $description,
-    ?string $entityType = null,
-    ?int $entityId = null,
-    ?int $notifiedUserId = null
+    ?string $ipAddress = null // Added ip_address, removed entityType, entityId, notifiedUserId
 ): bool {
-    $sql = "INSERT INTO activity_log (user_id, username, action_type, description, entity_type, entity_id, notified_user_id, is_read)
-            VALUES (:user_id, :username, :action_type, :description, :entity_type, :entity_id, :notified_user_id, :is_read)";
+    // Columns entity_type, entity_id, notified_user_id, is_read are removed from the new schema.
+    // ip_address is in the new schema.
+    $sql = "INSERT INTO activity_log (user_id, username, action_type, description, ip_address)
+            VALUES (:user_id, :username, :action_type, :description, :ip_address)";
 
     try {
         $stmt = $pdo->prepare($sql);
@@ -690,13 +647,7 @@ function logActivity(
         $stmt->bindValue(':username', $username, PDO::PARAM_STR);
         $stmt->bindValue(':action_type', $actionType, PDO::PARAM_STR);
         $stmt->bindValue(':description', $description, PDO::PARAM_STR);
-        $stmt->bindValue(':entity_type', $entityType, $entityType ? PDO::PARAM_STR : PDO::PARAM_NULL);
-        $stmt->bindValue(':entity_id', $entityId, $entityId ? PDO::PARAM_INT : PDO::PARAM_NULL);
-        $stmt->bindValue(':notified_user_id', $notifiedUserId, $notifiedUserId ? PDO::PARAM_INT : PDO::PARAM_NULL);
-        // is_read should be 0 (false) by default if it's a notification for someone.
-        // If notifiedUserId is NULL, it's a general log, is_read can be considered irrelevant or true (already "seen" by system).
-        // The table default is 0, so we can explicitly set it based on notifiedUserId.
-        $stmt->bindValue(':is_read', $notifiedUserId ? 0 : 1, PDO::PARAM_INT); // 0 for unread if it's a notification, 1 if general log
+        $stmt->bindValue(':ip_address', $ipAddress, $ipAddress ? PDO::PARAM_STR : PDO::PARAM_NULL);
 
         return $stmt->execute();
     } catch (PDOException $e) {
@@ -726,8 +677,8 @@ function getRecentActivities(PDO $pdo, int $limit = 15): array {
                 action_type,
                 description,
                 {$timestamp_conversion_sql} AS timestamp,
-                entity_type,
-                entity_id
+                ip_address -- Added ip_address
+                -- entity_type, entity_id (Removed)
             FROM activity_log
             ORDER BY timestamp DESC
             LIMIT :limit_val";
@@ -761,7 +712,7 @@ function getRecentActivities(PDO $pdo, int $limit = 15): array {
  * @return array An array of activity log records.
  */
 function getGlobalActivityLog(PDO $pdo, int $limit = 25, int $offset = 0): array {
-    $sql = "SELECT id, timestamp, username, action_type, description, entity_type, entity_id
+    $sql = "SELECT id, timestamp, username, action_type, description, ip_address -- Added ip_address, removed entity_type, entity_id
             FROM activity_log
             ORDER BY timestamp DESC
             LIMIT :limit_val OFFSET :offset_val";
@@ -840,15 +791,15 @@ function deleteActivityLogs(PDO $pdo, ?string $olderThanTimestamp = null): int {
 function getStudentHistoricalPerformance(PDO $pdo, int $studentId): array {
     $sql = "SELECT
                 srs.*,
-                rbs.term_end_date,
+                rb.term_end_date,
                 ay.year_name,
                 t.term_name,
                 c.class_name
-            FROM student_report_summary srs
-            JOIN report_batch_settings rbs ON srs.report_batch_id = rbs.id
-            JOIN academic_years ay ON rbs.academic_year_id = ay.id
-            JOIN terms t ON rbs.term_id = t.id
-            JOIN classes c ON rbs.class_id = c.id
+            FROM student_term_summaries srs -- Renamed table
+            JOIN report_batches rb ON srs.report_batch_id = rb.id -- Renamed table & alias
+            JOIN academic_years ay ON rb.academic_year_id = ay.id
+            JOIN terms t ON rb.term_id = t.id
+            JOIN classes c ON rb.class_id = c.id
             WHERE srs.student_id = :student_id
             ORDER BY ay.year_name ASC, t.id ASC"; // Order by term ID assuming it reflects term sequence
     try {
@@ -876,8 +827,8 @@ function getStudentSubjectPerformanceAcrossTerms(PDO $pdo, int $studentId, int $
                 sc.bot_score,
                 sc.mot_score,
                 sc.eot_score,
-                -- If grades are stored in scores table, fetch them here e.g., sc.eot_grade
-                rbs.term_end_date,
+                -- If grades are stored in scores table, fetch them here e.g., sc.eot_grade (Not in new schema)
+                rb.term_end_date,
                 ay.year_name,
                 t.term_name,
                 c.class_name,
@@ -885,10 +836,10 @@ function getStudentSubjectPerformanceAcrossTerms(PDO $pdo, int $studentId, int $
                 subj.subject_code
             FROM scores sc
             JOIN subjects subj ON sc.subject_id = subj.id
-            JOIN report_batch_settings rbs ON sc.report_batch_id = rbs.id
-            JOIN academic_years ay ON rbs.academic_year_id = ay.id
-            JOIN terms t ON rbs.term_id = t.id
-            JOIN classes c ON rbs.class_id = c.id
+            JOIN report_batches rb ON sc.report_batch_id = rb.id -- Renamed table & alias
+            JOIN academic_years ay ON rb.academic_year_id = ay.id
+            JOIN terms t ON rb.term_id = t.id
+            JOIN classes c ON rb.class_id = c.id
             WHERE sc.student_id = :student_id AND sc.subject_id = :subject_id
             ORDER BY ay.year_name ASC, t.id ASC"; // Order by term ID
     try {
