@@ -101,17 +101,34 @@ if (!function_exists('getPointsFromGradeUtil')) {
 }
 
 if (!function_exists('getSubjectEOTRemarkUtil')) {
-    function getSubjectEOTRemarkUtil($eotScore, $remarksScoreMap) {
+    // $remarksScoreMap parameter is removed, as the map is now fixed internally.
+    function getSubjectEOTRemarkUtil($eotScore) {
         if ($eotScore === null || $eotScore === '' || $eotScore === 'N/A' || !is_numeric($eotScore)) return 'N/A';
         $eotScore = floatval($eotScore);
-        if ($eotScore < 0 || $eotScore > 100) return 'N/A';
-        krsort($remarksScoreMap);
+        if ($eotScore < 0 || $eotScore > 100) return 'N/A'; // Scores are out of 100
+
+        // New remarks scale for EOT per subject
+        $remarksScoreMap = [
+            90 => "Excellent", // Score >= 90
+            80 => "Very Good", // Score >= 80
+            70 => "Good",      // Score >= 70
+            60 => "Fair",      // Score >= 60
+            50 => "Tried",     // Score >= 50
+            0  => "Improve"    // Score >= 0
+        ];
+        // krsort($remarksScoreMap); // Not strictly necessary if defined in descending order of score
+                                  // but good practice if map order isn't guaranteed.
+                                  // However, since we iterate and take the first match, order is key.
+                                  // Defining in descending order of score threshold is important.
+
         foreach ($remarksScoreMap as $minScore => $remark) {
             if ($eotScore >= $minScore) {
                 return $remark;
             }
         }
-        return 'Fail';
+        // This fallback should ideally not be reached if 0 is in the map.
+        // If eotScore is valid (0-100), it will always be >= 0.
+        return 'N/A'; // Fallback for safety, though logic implies "Improve" should cover 0.
     }
 }
 
