@@ -65,7 +65,7 @@ CREATE TABLE `subjects` (
 
 -- Default subjects (example for upper primary)
 INSERT INTO `subjects` (`subject_code`, `subject_name_full`) VALUES
-('ENG', 'English Language'),
+('ENG', 'English'),
 ('MTC', 'Mathematics'),
 ('SCI', 'Science'),
 ('SST', 'Social Studies'),

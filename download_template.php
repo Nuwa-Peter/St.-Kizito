@@ -92,8 +92,8 @@ function populateInstructionsSheet(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet
 
 try {
     // System is now P5-P7 only. Remove template type distinction.
-    // Subjects based on the new schema defaults for P5-P7.
-    $subjects = ['English Language', 'Mathematics', 'Science', 'Social Studies', 'Religious Education'];
+    // Subjects based on the new schema defaults for P5-P7. Corrected "English Language" to "English".
+    $subjects = ['English', 'Mathematics', 'Science', 'Social Studies', 'Religious Education'];
     $filename = "P5-P7_Marks_Template_" . date('Y-m-d') . ".xlsx";
 
     // Note: The populateSubjectSheet function uses the provided $subjectName directly as the sheet title.

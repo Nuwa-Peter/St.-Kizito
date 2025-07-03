@@ -103,16 +103,10 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
             <div class="card mb-4">
                 <h5 class="card-header card-header-custom text-center">Download Marks Entry Template</h5>
                 <div class="card-body text-center">
-                    <p class="text-muted mb-3">Download the appropriate Excel template for the class level. Each template contains multiple sheets, one for each subject.</p>
-                    <div class="dropdown d-inline-block">
-                        <button class="btn btn-primary dropdown-toggle" type="button" id="downloadTemplateDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-file-excel"></i> Select Template to Download
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="downloadTemplateDropdown">
-                            <li><a class="dropdown-item" href="download_template.php?type=lower"><i class="fas fa-child"></i> Lower Primary (P1-P3)</a></li>
-                            <li><a class="dropdown-item" href="download_template.php?type=upper"><i class="fas fa-user-graduate"></i> Upper Primary (P4-P7)</a></li>
-                        </ul>
-                    </div>
+                    <p class="text-muted mb-3">Download the Excel template for P5-P7 marks entry. The template contains multiple sheets, one for each subject.</p>
+                    <a href="download_template.php" class="btn btn-primary">
+                        <i class="fas fa-file-excel"></i> Download P5-P7 Marks Entry Template
+                    </a>
                     <p class="text-muted mt-3"><small>Ensure you have Microsoft Excel or a compatible spreadsheet program to open and edit these files.</small></p>
                 </div>
             </div>
@@ -130,17 +124,9 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
                             <label for="class_selection" class="form-label">Class:</label>
                     <select class="form-select" id="class_selection" name="class_selection" required>
                         <option value="" disabled selected>Select Class</option>
-                        <optgroup label="Lower Primary">
-                            <option value="P1">P1</option>
-                            <option value="P2">P2</option>
-                            <option value="P3">P3</option>
-                        </optgroup>
-                        <optgroup label="Upper Primary">
-                            <option value="P4">P4</option>
-                            <option value="P5">P5</option>
-                            <option value="P6">P6</option>
-                            <option value="P7">P7</option>
-                        </optgroup>
+                        <option value="P5">P5</option>
+                        <option value="P6">P6</option>
+                        <option value="P7">P7</option>
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -188,48 +174,31 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
                     <hr>
 
                     <h6 class="mt-4 text-center">2. Enter Teacher Initials</h6>
-                    <p class="text-muted text-center">Enter teacher initials for each subject taught in the selected class. These will appear on the report cards.</p>
+                    <p class="text-muted text-center">Enter teacher initials for each P5-P7 subject. These will appear on the report cards.</p>
 
-                    <div class="row mb-2 subject-initials-row common-subject-initials justify-content-center" id="english-initials-block">
-                        <div class="col-md-4 text-end"><label for="english_initials" class="form-label">English Teacher Initials:</label></div>
-                        <div class="col-md-4"><input type="text" class="form-control" id="english_initials" name="teacher_initials[english]" placeholder="e.g., J.D." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['english'] ?? ''); ?>"></div>
+                    <!-- Subject codes used here (e.g., 'ENG', 'MTC') should match the keys expected by report_card.php for $teacherInitials array -->
+                    <!-- These correspond to the new P5-P7 subject set. -->
+                    <div class="row mb-2 justify-content-center"> <!-- Removed specific JS classes, always visible -->
+                        <div class="col-md-4 text-end"><label for="eng_initials" class="form-label">English Teacher Initials:</label></div>
+                        <div class="col-md-4"><input type="text" class="form-control" id="eng_initials" name="teacher_initials[ENG]" placeholder="e.g., J.D." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['ENG'] ?? ''); ?>"></div>
                     </div>
-                    <div class="row mb-2 subject-initials-row common-subject-initials justify-content-center" id="mtc-initials-block">
-                        <div class="col-md-4 text-end"><label for="mtc_initials" class="form-label">MTC (Math) Teacher Initials:</label></div>
-                        <div class="col-md-4"><input type="text" class="form-control" id="mtc_initials" name="teacher_initials[mtc]" placeholder="e.g., A.B." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['mtc'] ?? ''); ?>"></div>
+                    <div class="row mb-2 justify-content-center">
+                        <div class="col-md-4 text-end"><label for="mtc_initials" class="form-label">Mathematics Teacher Initials:</label></div>
+                        <div class="col-md-4"><input type="text" class="form-control" id="mtc_initials" name="teacher_initials[MTC]" placeholder="e.g., A.B." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['MTC'] ?? ''); ?>"></div>
                     </div>
-
-                    <!-- P1-P3 Specific Subject Initials -->
-                    <div class="row mb-2 subject-initials-row p1p3-subject-initials justify-content-center" id="re-initials-block" style="display:none;">
-                        <div class="col-md-4 text-end"><label for="re_initials" class="form-label">R.E Teacher Initials:</label></div>
-                        <div class="col-md-4"><input type="text" class="form-control" id="re_initials" name="teacher_initials[re]" placeholder="e.g., S.P." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['re'] ?? ''); ?>"></div>
+                    <div class="row mb-2 justify-content-center">
+                        <div class="col-md-4 text-end"><label for="sci_initials" class="form-label">Science Teacher Initials:</label></div>
+                        <div class="col-md-4"><input type="text" class="form-control" id="sci_initials" name="teacher_initials[SCI]" placeholder="e.g., C.E." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['SCI'] ?? ''); ?>"></div>
                     </div>
-                    <div class="row mb-2 subject-initials-row p1p3-subject-initials justify-content-center" id="lit1-initials-block" style="display:none;">
-                        <div class="col-md-4 text-end"><label for="lit1_initials" class="form-label">Literacy I Teacher Initials:</label></div>
-                        <div class="col-md-4"><input type="text" class="form-control" id="lit1_initials" name="teacher_initials[lit1]" placeholder="e.g., K.L." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['lit1'] ?? ''); ?>"></div>
+                    <div class="row mb-2 justify-content-center">
+                        <div class="col-md-4 text-end"><label for="sst_initials" class="form-label">Social Studies Teacher Initials:</label></div>
+                        <div class="col-md-4"><input type="text" class="form-control" id="sst_initials" name="teacher_initials[SST]" placeholder="e.g., F.G." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['SST'] ?? ''); ?>"></div>
                     </div>
-                    <div class="row mb-2 subject-initials-row p1p3-subject-initials justify-content-center" id="lit2-initials-block" style="display:none;">
-                        <div class="col-md-4 text-end"><label for="lit2_initials" class="form-label">Literacy II Teacher Initials:</label></div>
-                        <div class="col-md-4"><input type="text" class="form-control" id="lit2_initials" name="teacher_initials[lit2]" placeholder="e.g., M.N." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['lit2'] ?? ''); ?>"></div>
+                    <div class="row mb-3 justify-content-center">
+                        <div class="col-md-4 text-end"><label for="re_initials" class="form-label">Religious Education Teacher Initials:</label></div>
+                        <div class="col-md-4"><input type="text" class="form-control" id="re_initials" name="teacher_initials[RE]" placeholder="e.g., S.P." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['RE'] ?? ''); ?>"></div>
                     </div>
-                    <div class="row mb-2 subject-initials-row p1p3-subject-initials justify-content-center" id="local_lang-initials-block" style="display:none;">
-                        <div class="col-md-4 text-end"><label for="local_lang_initials" class="form-label">Local Language Teacher Initials:</label></div>
-                        <div class="col-md-4"><input type="text" class="form-control" id="local_lang_initials" name="teacher_initials[local_lang]" placeholder="e.g., O.P." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['local_lang'] ?? ''); ?>"></div>
-                    </div>
-
-                    <!-- P4-P7 Specific Subject Initials -->
-                    <div class="row mb-2 subject-initials-row p4p7-subject-initials justify-content-center" id="science-initials-block" style="display:none;">
-                        <div class="col-md-4 text-end"><label for="science_initials" class="form-label">Science Teacher Initials:</label></div>
-                        <div class="col-md-4"><input type="text" class="form-control" id="science_initials" name="teacher_initials[science]" placeholder="e.g., C.E." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['science'] ?? ''); ?>"></div>
-                    </div>
-                    <div class="row mb-2 subject-initials-row p4p7-subject-initials justify-content-center" id="sst-initials-block" style="display:none;">
-                        <div class="col-md-4 text-end"><label for="sst_initials" class="form-label">SST Teacher Initials:</label></div>
-                        <div class="col-md-4"><input type="text" class="form-control" id="sst_initials" name="teacher_initials[sst]" placeholder="e.g., F.G." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['sst'] ?? ''); ?>"></div>
-                    </div>
-                    <div class="row mb-3 subject-initials-row p4p7-subject-initials justify-content-center" id="kiswahili-initials-block" style="display:none;">
-                        <div class="col-md-4 text-end"><label for="kiswahili_initials" class="form-label">Kiswahili Teacher Initials:</label></div>
-                        <div class="col-md-4"><input type="text" class="form-control" id="kiswahili_initials" name="teacher_initials[kiswahili]" placeholder="e.g., H.I." value="<?php echo htmlspecialchars($current_teacher_initials_for_session['kiswahili'] ?? ''); ?>"></div>
-                    </div>
+                    <!-- Removed Kiswahili, Lit1, Lit2, Local Language initials fields -->
                 </div>
             </div> <!-- Close Unified File Upload & Initials Card's card-body -->
             </div> <!-- Close Unified File Upload & Initials Card -->

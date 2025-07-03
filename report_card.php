@@ -99,16 +99,15 @@ $totalStudentsInClass = htmlspecialchars($studentSummaryData['total_students_in_
 
 $subjectsToDisplayInTable = $currentStudentEnrichedData['subjects'] ?? [];
 
+// Updated subjectDisplayNames to use new subject codes (matching kizito_schema.sql and process_excel.php)
+// and to ensure "ENGLISH" is used for 'ENG'.
 $subjectDisplayNames = $subjectDisplayNames ?? [
-    'english' => 'ENGLISH',
-    'mtc' => 'MATHEMATICS',
-    'science' => 'SCIENCE',
-    'sst' => 'SOCIAL STUDIES',
-    'kiswahili' => 'KISWAHILI',
-    're' => 'RELIGIOUS EDUCATION',
-    'lit1' => 'LITERACY ONE',
-    'lit2' => 'LITERACY TWO',
-    'local_lang' => 'LOCAL LANGUAGE'
+    'ENG' => 'ENGLISH',
+    'MTC' => 'MATHEMATICS',
+    'SCI' => 'SCIENCE',
+    'SST' => 'SOCIAL STUDIES',
+    'RE'  => 'RELIGIOUS EDUCATION'
+    // Obsolete subjects (kiswahili, lit1, lit2, local_lang) removed
 ];
 $gradingScaleForP4P7Display = $gradingScaleForP4P7Display ?? [
     'D1' => '90-100', 'D2' => '80-89', 'C3' => '70-79', 'C4' => '60-69',

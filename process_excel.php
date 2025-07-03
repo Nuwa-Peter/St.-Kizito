@@ -58,7 +58,7 @@ $requiredSubjectInternalKeys = $expectedSubjectInternalKeys;
 // to internal subject codes (as in kizito_schema.sql and used by getSubjectIdByCode).
 // Sheet names are case-insensitive for matching.
 $sheetNameToInternalCodeMap = [
-    'english language' => 'ENG',
+    'english' => 'ENG', // Corrected from 'english language'
     'mathematics' => 'MTC',
     'science' => 'SCI',
     'social studies' => 'SST',
