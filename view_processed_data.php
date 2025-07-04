@@ -140,11 +140,11 @@ $subjectDisplayNames = [
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-light sticky-top shadow-sm">
+    <nav class="navbar navbar-themed sticky-top shadow-sm"> <!-- Applied navbar-themed -->
         <div class="container-fluid">
-            <a class="navbar-brand" href="index.php"> <!-- Corrected -->
+            <a class="navbar-brand" href="index.php">
                 <img src="images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2" onerror="this.style.display='none';">
-                Maria Owembabazi P/S - Report System
+                ST KIZITO PREPARATORY SEMINARY RWEBISHURI - Report System
             </a>
             <div>
                 <a href="data_entry.php" class="btn btn-outline-primary me-2"><i class="fas fa-plus-circle"></i> Import Another Batch</a>
@@ -196,11 +196,11 @@ $subjectDisplayNames = [
                 </div>
             </div>
             <div class="card-footer text-center">
-                <button type="button" id="addNewStudentModalBtn" class="btn btn-primary btn-sm me-2"><i class="fas fa-user-plus"></i> Add New Student</button>
-                <button type="button" id="enableEditingBtn" class="btn btn-info btn-sm me-2"><i class="fas fa-edit"></i> Enable Table Editing</button>
-                <a href="run_calculations.php?batch_id=<?php echo $batch_id; ?>" class="btn btn-warning btn-sm me-2"><i class="fas fa-calculator"></i> Calculate Summaries & Auto-Remarks</a>
-                <a href="generate_pdf.php?batch_id=<?php echo $batch_id; ?>" class="btn btn-danger btn-sm me-2"><i class="fas fa-file-pdf"></i> Generate Full Class PDF Report</a>
-                <a href="summary_sheet.php?batch_id=<?php echo $batch_id; ?>" class="btn btn-success btn-sm me-2"><i class="fas fa-chart-bar"></i> View Class Summary Sheet</a>
+                <button type="button" id="addNewStudentModalBtn" class="btn btn-theme-primary btn-sm me-2"><i class="fas fa-user-plus"></i> Add New Student</button>
+                <button type="button" id="enableEditingBtn" class="btn btn-theme-accent btn-sm me-2"><i class="fas fa-edit"></i> Enable Table Editing</button>
+                <a href="run_calculations.php?batch_id=<?php echo $batch_id; ?>" class="btn btn-theme-accent btn-sm me-2"><i class="fas fa-calculator"></i> Calculate Summaries & Auto-Remarks</a> <!-- Yellow for warning/calc -->
+                <a href="generate_pdf.php?batch_id=<?php echo $batch_id; ?>" class="btn btn-theme-secondary btn-sm me-2"><i class="fas fa-file-pdf"></i> Generate Full Class PDF Report</a> <!-- Coffee for PDF -->
+                <a href="summary_sheet.php?batch_id=<?php echo $batch_id; ?>" class="btn btn-theme-primary btn-sm me-2"><i class="fas fa-chart-bar"></i> View Class Summary Sheet</a> <!-- Dark blue for view -->
             </div>
         </div>
 
@@ -233,7 +233,7 @@ $subjectDisplayNames = [
         <form id="editMarksForm" action="handle_edit_marks.php" method="post">
             <input type="hidden" name="batch_id" value="<?php echo $batch_id; ?>">
             <div class="mb-3 text-center" id="editModeButtons" style="display: none;">
-                <button type="submit" class="btn btn-primary btn-sm me-2"><i class="fas fa-save"></i> Save Changes</button>
+                <button type="submit" class="btn btn-theme-primary btn-sm me-2"><i class="fas fa-save"></i> Save Changes</button> <!-- Changed -->
                 <button type="button" id="cancelEditingBtn" class="btn btn-secondary btn-sm"><i class="fas fa-times"></i> Cancel Edits</button>
             </div>
 
@@ -444,7 +444,7 @@ $subjectDisplayNames = [
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="submit" class="btn btn-theme-primary">Save Changes</button> <!-- Changed to btn-theme-primary -->
                     </div>
                 </form>
             </div>

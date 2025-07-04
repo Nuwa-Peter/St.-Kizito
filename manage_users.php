@@ -68,22 +68,11 @@ $pageUsername = $_SESSION['username'] ?? 'User'; // For navbar display
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="images/logo.png">
-    <link href="css/style.css" rel="stylesheet"> <!-- Ensure this file exists or remove link -->
+    <link href="css/style.css" rel="stylesheet">
     <style>
         /* body background is now in css/style.css */
-        /* body { background-color: #FFFACD; } */ /* Moved to css/style.css */
-        .navbar-custom-manage { /* Custom class for this page's navbar */
-            background-color: #00008B !important; /* Dark Blue navbar */
-            box-shadow: 0 2px 4px rgba(0,0,0,.1);
-        }
-        .navbar-custom-manage .navbar-brand,
-        .navbar-custom-manage .nav-link {
-            color: #f8f9fa !important; /* Light color for text */
-        }
-        .navbar-custom-manage .navbar-brand:hover,
-        .navbar-custom-manage .nav-link:hover {
-            color: #FFFFE0 !important; /* Light yellow for hover */
-        }
+        /* Specific navbar styling moved to .navbar-themed in style.css */
+
         .container.main-content {
             background-color: #fff;
             padding: 25px;
@@ -95,7 +84,7 @@ $pageUsername = $_SESSION['username'] ?? 'User'; // For navbar display
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-custom-manage sticky-top shadow-sm"> <!-- Added navbar-expand-lg for better structure if needed -->
+    <nav class="navbar navbar-expand-lg navbar-themed sticky-top shadow-sm"> <!-- Changed to navbar-themed -->
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">
                 <img src="images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2" onerror="this.style.display='none';">

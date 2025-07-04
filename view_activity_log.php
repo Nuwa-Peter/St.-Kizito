@@ -109,8 +109,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['role']) && $_SESSI
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="css/style.css" rel="stylesheet"> <!-- Added shared stylesheet -->
     <style>
-        body { background-color: #e0f7fa; }
+        /* body background is now in css/style.css */
+        /* body { background-color: #e0f7fa; } */
         .container.main-content {
             background-color: #fff;
             padding: 25px;
@@ -131,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['role']) && $_SESSI
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-light sticky-top shadow-sm">
+    <nav class="navbar navbar-themed sticky-top shadow-sm"> <!-- Applied navbar-themed -->
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">
                 <img src="images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2" onerror="this.style.display='none';">
@@ -140,7 +142,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['role']) && $_SESSI
              <div class="ms-auto d-flex align-items-center">
                 <?php if (isset($_SESSION['username'])): ?>
                     <div class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"> <!-- Removed text-dark -->
                             <i class="fas fa-user-shield me-1"></i> <?php echo htmlspecialchars($_SESSION['username']); ?> (Superadmin)
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">

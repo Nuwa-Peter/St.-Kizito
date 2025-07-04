@@ -4,4 +4,70 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Themed Navbar Style (Dark Blue) */
+.navbar-themed {
+    background-color: #00008B !important; /* Dark Blue */
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.navbar-themed .navbar-brand,
+.navbar-themed .nav-link,
+.navbar-themed .navbar-text { /* Added .navbar-text for general text */
+    color: #f8f9fa !important; /* Light color for text */
+}
+
+.navbar-themed .navbar-brand:hover,
+.navbar-themed .nav-link:hover {
+    color: #FFFFE0 !important; /* Light yellow for hover */
+}
+
+/* For hamburger icon on dark background if navbar is collapsible */
+.navbar-themed .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.85%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+.navbar-themed .dropdown-menu { /* Ensure dropdowns are styled if opened from themed navbar */
+    background-color: #fff; /* Standard white dropdown */
+}
+.navbar-themed .dropdown-menu .dropdown-item {
+    color: #212529; /* Standard dark text for dropdown items */
+}
+.navbar-themed .dropdown-menu .dropdown-item:hover {
+    background-color: #e9ecef; /* Standard hover for dropdown items */
+}
+
+/* Themed Buttons */
+.btn-theme-primary {
+    background-color: #00008B !important; /* Dark Blue */
+    border-color: #00008B !important;
+    color: #fff !important;
+}
+.btn-theme-primary:hover, .btn-theme-primary:focus, .btn-theme-primary:active {
+    background-color: #00005A !important; /* Darker Blue */
+    border-color: #00005A !important;
+    color: #fff !important;
+}
+
+.btn-theme-secondary {
+    background-color: #A0522D !important; /* Coffee Brown (Sienna) */
+    border-color: #A0522D !important;
+    color: #fff !important;
+}
+.btn-theme-secondary:hover, .btn-theme-secondary:focus, .btn-theme-secondary:active {
+    background-color: #8B4513 !important; /* Darker Coffee Brown (SaddleBrown) */
+    border-color: #8B4513 !important;
+    color: #fff !important;
+}
+
+.btn-theme-accent {
+    background-color: #FFD700 !important; /* Yellow (Gold) */
+    border-color: #FFD700 !important;
+    color: #212529 !important; /* Dark text for contrast */
+}
+.btn-theme-accent:hover, .btn-theme-accent:focus, .btn-theme-accent:active {
+    background-color: #f0c000 !important; /* Darker Yellow */
+    border-color: #f0c000 !important;
+    color: #212529 !important;
+}
+
 /* Add other shared styles here as the application grows */

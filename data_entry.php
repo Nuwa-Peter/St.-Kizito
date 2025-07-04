@@ -59,7 +59,7 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-light sticky-top shadow-sm">
+    <nav class="navbar navbar-themed sticky-top shadow-sm"> <!-- Applied navbar-themed -->
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">
                 <img src="images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2" onerror="this.style.display='none';">
@@ -104,7 +104,7 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
                 <h5 class="card-header card-header-custom text-center">Download Marks Entry Template</h5>
                 <div class="card-body text-center">
                     <p class="text-muted mb-3">Download the Excel template for P5-P7 marks entry. The template contains multiple sheets, one for each subject.</p>
-                    <a href="download_template.php" class="btn btn-primary">
+                    <a href="download_template.php" class="btn btn-theme-accent"> <!-- Changed to btn-theme-accent -->
                         <i class="fas fa-file-excel"></i> Download P5-P7 Marks Entry Template
                     </a>
                     <p class="text-muted mt-3"><small>Ensure you have Microsoft Excel or a compatible spreadsheet program to open and edit these files.</small></p>
@@ -206,7 +206,7 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
             <!-- General Remarks Card Removed -->
 
             <div class="d-grid gap-2 col-md-6 mx-auto mt-4 mb-5">
-                <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-cogs"></i> Process & Save Data</button>
+                <button type="submit" class="btn btn-theme-primary btn-lg"><i class="fas fa-cogs"></i> Process & Save Data</button> <!-- Changed to btn-theme-primary -->
             </div>
             </div></div> <!-- Close Overall Form Width Wrapper -->
         </form>

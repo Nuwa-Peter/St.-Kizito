@@ -200,7 +200,7 @@ $divisionChartLabels = [
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-light sticky-top shadow-sm non-printable">
+    <nav class="navbar navbar-themed sticky-top shadow-sm non-printable"> <!-- Applied navbar-themed -->
         <!-- ... Navbar content (unchanged) ... -->
          <div class="container-fluid">
             <a class="navbar-brand" href="index.php">

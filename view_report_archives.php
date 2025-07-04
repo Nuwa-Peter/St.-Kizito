@@ -89,7 +89,7 @@ try {
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-light bg-light sticky-top shadow-sm">
+    <nav class="navbar navbar-themed sticky-top shadow-sm"> <!-- Applied navbar-themed -->
         <div class="container-fluid">
             <a class="navbar-brand" href="index.php">
                 <img src="images/logo.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2" onerror="this.style.display='none';">

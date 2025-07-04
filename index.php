@@ -42,14 +42,14 @@ try {
         $terms_list = $stmt_terms->fetchAll(PDO::FETCH_ASSOC);
 
         $stmt_batch_check = $pdo->prepare(
-            "SELECT id FROM report_batch_settings
+            "SELECT id FROM report_batches -- Updated table name
              WHERE academic_year_id = :academic_year_id
                AND class_id = :class_id
                AND term_id = :term_id
              LIMIT 1"
         );
         $stmt_summary_check = $pdo->prepare(
-            "SELECT COUNT(id) FROM student_report_summary WHERE report_batch_id = :report_batch_id LIMIT 1"
+            "SELECT COUNT(id) FROM student_term_summaries WHERE report_batch_id = :report_batch_id LIMIT 1" // Updated table name
         );
 
         foreach ($classes_list as $class_item) {
