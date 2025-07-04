@@ -15,15 +15,15 @@ require_once 'db_connection.php'; // Ensures $pdo is available
  */
 function getReportBatchSettings(PDO $pdo, int $reportBatchId): array|false {
     $sql = "SELECT
-                rbs.*,
+                rb.*,
                 ay.year_name,
                 t.term_name,
                 c.class_name
-            FROM report_batch_settings rbs
-            JOIN academic_years ay ON rbs.academic_year_id = ay.id
-            JOIN terms t ON rbs.term_id = t.id
-            JOIN classes c ON rbs.class_id = c.id
-            WHERE rbs.id = :batch_id";
+            FROM report_batches rb
+            JOIN academic_years ay ON rb.academic_year_id = ay.id -- Corrected alias
+            JOIN terms t ON rb.term_id = t.id                   -- Corrected alias
+            JOIN classes c ON rb.class_id = c.id                 -- Corrected alias
+            WHERE rb.id = :batch_id";                            -- Corrected alias
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':batch_id' => $reportBatchId]);
     return $stmt->fetch(); // Default fetch mode is PDO::FETCH_ASSOC from db_connection.php

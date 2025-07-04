@@ -36,27 +36,27 @@ try {
     $whereClauses = [];
     $executeParams = [];
     if ($filter_year_id !== null) {
-        $whereClauses[] = "rbs.academic_year_id = :year_id";
+        $whereClauses[] = "rb.academic_year_id = :year_id"; // Changed alias
         $executeParams[':year_id'] = $filter_year_id;
     }
     if ($filter_term_id !== null) {
-        $whereClauses[] = "rbs.term_id = :term_id";
+        $whereClauses[] = "rb.term_id = :term_id"; // Changed alias
         $executeParams[':term_id'] = $filter_term_id;
     }
     if ($filter_class_id !== null) {
-        $whereClauses[] = "rbs.class_id = :class_id";
+        $whereClauses[] = "rb.class_id = :class_id"; // Changed alias
         $executeParams[':class_id'] = $filter_class_id;
     }
 
-    $sqlBatches = "SELECT rbs.id as batch_id, c.class_name, ay.year_name, t.term_name, rbs.import_date
-                     FROM report_batch_settings rbs
-                     JOIN classes c ON rbs.class_id = c.id
-                     JOIN academic_years ay ON rbs.academic_year_id = ay.id
-                     JOIN terms t ON rbs.term_id = t.id";
+    $sqlBatches = "SELECT rb.id as batch_id, c.class_name, ay.year_name, t.term_name, rb.import_date
+                     FROM report_batches rb -- Changed table name and alias
+                     JOIN classes c ON rb.class_id = c.id
+                     JOIN academic_years ay ON rb.academic_year_id = ay.id
+                     JOIN terms t ON rb.term_id = t.id";
     if (!empty($whereClauses)) {
         $sqlBatches .= " WHERE " . implode(" AND ", $whereClauses);
     }
-    $sqlBatches .= " ORDER BY rbs.import_date DESC, ay.year_name DESC, t.term_name ASC, c.class_name ASC";
+    $sqlBatches .= " ORDER BY rb.import_date DESC, ay.year_name DESC, t.term_name ASC, c.class_name ASC"; // Changed alias
 
     $stmtFilteredBatches = $pdo->prepare($sqlBatches);
     $stmtFilteredBatches->execute($executeParams);

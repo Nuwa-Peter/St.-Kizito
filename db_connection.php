@@ -18,34 +18,71 @@ try {
 
 // Helper function for simple "find or create" lookup table records
 function findOrCreateLookup($pdo, $tableName, $columnName, $value, $otherColumns = []) {
+    // 1. Trim the input value to remove accidental leading/trailing whitespace.
+    $trimmedValue = trim($value);
+
     $findSql = "SELECT id FROM `$tableName` WHERE `$columnName` = :value_param";
     $stmt = $pdo->prepare($findSql);
-    $stmt->execute([':value_param' => $value]);
+    // 2. Use the trimmed value for the lookup.
+    $stmt->execute([':value_param' => $trimmedValue]);
     $id = $stmt->fetchColumn();
 
-    if (!$id) {
-        $colsToInsert = [$columnName => $value] + $otherColumns;
+    if (!$id) { // If no existing ID is found based on $trimmedValue
+        // 3. Use the trimmed value for insertion.
+        $colsToInsert = [$columnName => $trimmedValue] + $otherColumns;
         $colNamesString = implode(', ', array_map(function($col) { return "`$col`"; }, array_keys($colsToInsert)));
         $colValuesString = implode(', ', array_map(function($col) { return ":$col"; }, array_keys($colsToInsert)));
 
         $insertSql = "INSERT INTO `$tableName` ($colNamesString) VALUES ($colValuesString)";
-        $stmt = $pdo->prepare($insertSql);
-        $stmt->execute($colsToInsert);
-        $id = $pdo->lastInsertId();
-    } elseif (!empty($otherColumns)) {
-        // If record found and there are other columns to potentially update (e.g. subject_name_full)
-        $updateParts = [];
-        $updateValues = [':id_param' => $id, ':value_param' => $value]; // value_param is for WHERE clause
-        foreach($otherColumns as $key => $val) {
-            // Only update if the new value is different or if the current DB value is NULL
-            // This simple version just updates. A more complex check could be added here.
-            $updateParts[] = "`$key` = :$key";
-            $updateValues[":$key"] = $val;
+        $stmtInsert = $pdo->prepare($insertSql); // Changed variable name to avoid conflict
+        try {
+            $stmtInsert->execute($colsToInsert);
+            $id = $pdo->lastInsertId();
+        } catch (PDOException $e) {
+            // Check for unique constraint violation (error code 1062 for MySQL)
+            if ($e->errorInfo[1] == 1062) {
+                // It's a duplicate key error. This means the value *does* exist,
+                // possibly due to a race condition or a case-insensitivity mismatch
+                // that the initial SELECT didn't catch but the INSERT did.
+                // Try to re-fetch the ID.
+                error_log("findOrCreateLookup: Insert failed due to duplicate for $tableName ($columnName=$trimmedValue). Re-fetching ID.");
+                $stmtRetry = $pdo->prepare($findSql); // Use original $findSql
+                $stmtRetry->execute([':value_param' => $trimmedValue]);
+                $id = $stmtRetry->fetchColumn();
+                if (!$id) {
+                    // This is unexpected if 1062 occurred. Log and re-throw or return null.
+                    error_log("findOrCreateLookup: CRITICAL - Re-fetch failed after 1062 for $tableName ($columnName=$trimmedValue).");
+                    // throw $e; // Or handle more gracefully depending on desired behavior
+                    return null;
+                }
+            } else {
+                // Different error, re-throw it
+                throw $e;
+            }
         }
-        if (!empty($updateParts)) {
-            $updateSql = "UPDATE `$tableName` SET " . implode(', ', $updateParts) . " WHERE `id` = :id_param AND `$columnName` = :value_param";
-            $stmt = $pdo->prepare($updateSql);
-            $stmt->execute($updateValues);
+    } elseif (!empty($otherColumns)) {
+        // Record found, and there are other columns to potentially update.
+        // This part is usually for tables like 'subjects' where you might update 'subject_name_full' if 'subject_code' matches.
+        // For 'terms', $otherColumns is usually empty, so this block might not be relevant for the 'terms' table call.
+        $updateParts = [];
+        $updateValues = [':id_param' => $id, ':value_param_where' => $trimmedValue]; // Use a different placeholder name for WHERE
+        $needsUpdate = false;
+        foreach($otherColumns as $key => $val) {
+            // Check current value in DB to see if update is needed for this specific 'otherColumn'
+            $checkOtherColSql = "SELECT `$key` FROM `$tableName` WHERE `id` = :id_param_check";
+            $stmtCheckOther = $pdo->prepare($checkOtherColSql);
+            $stmtCheckOther->execute([':id_param_check' => $id]);
+            $currentOtherVal = $stmtCheckOther->fetchColumn();
+            if ($currentOtherVal !== $val) {
+                $updateParts[] = "`$key` = :$key";
+                $updateValues[":$key"] = $val;
+                $needsUpdate = true;
+            }
+        }
+        if ($needsUpdate && !empty($updateParts)) {
+            $updateSql = "UPDATE `$tableName` SET " . implode(', ', $updateParts) . " WHERE `id` = :id_param AND `$columnName` = :value_param_where";
+            $stmtUpdate = $pdo->prepare($updateSql);
+            $stmtUpdate->execute($updateValues);
         }
     }
     return $id;

@@ -75,15 +75,15 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
     <div class="container main-content">
         <?php
         if (isset($_SESSION['error_message']) && !empty($_SESSION['error_message'])) {
-            echo '<div class="alert alert-danger" role="alert">' . htmlspecialchars($_SESSION['error_message']) . '</div>';
+            echo '<div class="alert alert-danger text-center" role="alert">' . htmlspecialchars($_SESSION['error_message']) . '</div>'; // Added text-center
             unset($_SESSION['error_message']);
         }
         if (isset($_SESSION['success_message']) && !empty($_SESSION['success_message'])) {
-            echo '<div class="alert alert-success" role="alert">' . htmlspecialchars($_SESSION['success_message']) . '</div>';
+            echo '<div class="alert alert-success text-center" role="alert">' . htmlspecialchars($_SESSION['success_message']) . '</div>'; // Added text-center
             if ($last_processed_batch_id) {
-                echo '<div class="mt-3">';
+                echo '<div class="mt-3 text-center">'; // Added text-center
                 // Link to a new page (view_processed_data.php) that will handle fetching details for this batch
-                echo '<a href="view_processed_data.php?batch_id=' . htmlspecialchars($last_processed_batch_id) . '" class="btn btn-primary me-2"><i class="fas fa-eye"></i> View Details for Processed Batch ID: ' . htmlspecialchars($last_processed_batch_id) . '</a>';
+                echo '<a href="view_processed_data.php?batch_id=' . htmlspecialchars($last_processed_batch_id) . '" class="btn btn-theme-primary me-2"><i class="fas fa-eye"></i> View Details for Processed Batch ID: ' . htmlspecialchars($last_processed_batch_id) . '</a>'; // Applied theme button
                 // The actual "Generate PDF" and "View Summary" for this batch will be on view_processed_data.php
                 echo '</div>';
             }
@@ -140,9 +140,9 @@ if(isset($_SESSION['report_data']) && !isset($_SESSION['last_processed_batch_id'
                     <label for="term" class="form-label">Term:</label>
                     <select class="form-select" id="term" name="term" required>
                         <option value="" disabled selected>Select Term</option>
-                        <option value="I">Term I</option>
-                        <option value="II">Term II</option>
-                        <option value="III">Term III</option>
+                        <option value="Term I">Term I</option>
+                        <option value="Term II">Term II</option>
+                        <option value="Term III">Term III</option>
                     </select>
                 </div>
             </div>

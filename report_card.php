@@ -59,14 +59,15 @@ if ($rawStudentNameForFile && $rawClassNameForPath) {
 }
 
 if (!$studentPhotoUrl) {
-    // IMPORTANT: User needs to create 'vendor/photos/' and place 'placeholder.png' in it.
-    // And also 'vendor/photos/[CLASS_NAME]/' directories for student photos.
-    $studentPhotoUrl = 'vendor/photos/placeholder.png';
-    // Check if placeholder itself exists, to prevent broken image icon for placeholder
-    if (!file_exists('vendor/photos/placeholder.png')) {
-        // Fallback if even placeholder is missing, though this isn't ideal.
-        // Alternatively, CSS could hide the img or show text.
-        // For now, let it point to a non-existent placeholder if so.
+    // Fallback to a local placeholder image
+    $localPlaceholderPath = 'images/photo_placeholder.jpg';
+    if (file_exists($localPlaceholderPath)) {
+        $studentPhotoUrl = $localPlaceholderPath;
+    } else {
+        // Optional: if even the local placeholder is missing, use a data URI or leave null
+        // For now, if local placeholder is missing, img src will be empty/broken.
+        // Or, use a very basic text placeholder via CSS if image is truly not found.
+        $studentPhotoUrl = null; // This will lead to an empty src if placeholder missing
     }
 }
 // --- End Student Photo Logic ---
@@ -138,67 +139,90 @@ $teacherInitials = $teacherInitials ?? ($_SESSION['current_teacher_initials'] ??
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 3mm; /* Increased margin slightly */
+            margin-bottom: 3mm;
             margin-top: 0;
-            min-height: 40mm; /* Approx height of a passport photo */
-            position: relative; /* For absolute positioning of central info if needed, or just rely on flex spacing */
+            /* min-height: 45mm; /* Combined height for top row + main row */
+            /* border: 1px solid #ccc; */
+            margin-bottom: 3mm; /* Overall bottom margin for the header block */
         }
 
-        .header-logo-container {
-            width: 35mm; /* Width for school logo */
-            height: 35mm; /* Height for school logo */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            /* border: 1px dashed lightblue; */ /* For layout debugging */
-        }
-        .header-logo-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .header-info-container {
+        /* Tier 1: School Info (Top, Centered) */
+        .rc-header-school-info {
             text-align: center;
-            flex-grow: 1;
-            padding: 0 3mm; /* Padding between logo/photo and text */
-            display: flex;
-            flex-direction: column;
-            justify-content: center; /* Center content vertically if header is taller */
-            align-items: center;
-            min-height: 40mm; /* Match student photo height */
-            /* border: 1px dashed pink; */ /* For layout debugging */
+            margin-bottom: 3mm; /* Space below school info block */
         }
-        .header .school-name { font-size: 18pt; font-weight: bold; margin: 0 0 1mm 0; color: #000; letter-spacing: 0.5px; }
-        .header .school-details { font-size: 8pt; margin: 0.25mm 0; color: #000; }
-        .header .report-title { font-size: 14pt; font-weight: bold; margin-top: 2mm; text-transform: uppercase; color: #000; letter-spacing: 1px; }
+        .rc-school-name { /* Main school name */
+            font-size: 18pt;
+            font-weight: bold;
+            color: #000;
+            letter-spacing: 0.5px;
+            margin-bottom: 1mm;
+        }
+        .rc-school-contact { /* For P.O Box, Tel, Email lines */
+            font-size: 9pt; /* Increased slightly from 8pt */
+            margin: 0.5mm 0;
+            color: #000;
+            line-height: 1.3;
+        }
 
-        .header-student-photo-container {
-            width: 35mm; /* Passport photo width */
-            height: 40mm; /* Passport photo height */
-            border: 1px solid #ccc;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f0f0f0;
-            /* border: 1px dashed lightgreen; */ /* For layout debugging */
+        /* Tier 2: Images Row (Logo Left, Student Photo Right) - Now uses an HTML table. Flex CSS removed. */
+        /* .rc-header-images-row, .rc-logo-area, .rc-student-photo-area are no longer needed for flex layout. */
+
+        .rc-school-logo-img {
+            /* height and width are now inline style/attributes */
+            object-fit: contain; /* Keep this if desired */
         }
-        .header-student-photo-container img {
-            max-width: 100%;
+        .rc-student-photo-img {
+            /* height and width are now inline style/attributes */
+            max-width: 100%; /* Still useful to keep image within its table cell/container div */
             max-height: 100%;
-            object-fit: cover;
+            object-fit: cover; /* Keep this if desired */
+            /* border: 1px solid #ccc; /* Border is now on the container div for student photo */
+        }
+        .rc-photo-na {
+            /* Styles for this are now primarily inline in the HTML for the N/A text span,
+               but this class can be kept for any shared minor styling if needed, or removed if fully inlined. */
+            font-size: 8pt;
+            color: #6c757d;
+            text-align: center;
         }
 
-        .student-details-block { margin-bottom: 2.5mm; } /* Photo is now in header, so this block is just for text details */
-        .student-info-grid { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 1mm 3mm; font-size: 10pt; margin-bottom:0.5mm;}
-        .student-info-grid strong {font-weight: bold;}
-        .lin-number-display {font-size: 9.5pt; text-align: left; margin-top: 0.5mm;}
-        .lin-number-display strong {font-weight: bold;}
+        /* Tier 3: Report Title (Centered) */
+        .rc-report-title-main {
+            text-align: center;
+            font-size: 17pt; /* Prominent title */
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #000;
+            letter-spacing: 1px;
+            margin-bottom: 3mm; /* Space below title */
+        }
+
+        /* Tier 4: Student Particulars (Centered) */
+        .rc-student-particulars {
+            text-align: center;
+            font-size: 10pt; /* Slightly larger base for student info */
+            margin-bottom: 3mm;
+            line-height: 1.4;
+        }
+        .rc-student-name {
+            font-size: 12pt;
+            font-weight: bold;
+            margin-bottom: 1.5mm;
+        }
+        .rc-student-class-details span {
+            margin: 0 1mm;
+        }
+        .rc-student-lin {
+            margin-top: 1mm;
+        }
+        .rc-student-particulars strong {
+            font-weight: bold;
+        }
+
+        /* Ensure old header styles that might conflict are cleared or not present */
+        /* .header-top-row, .header-main-row, .header-logo-container, .header-center-column, etc. are removed */
+
         .academic-summary-grid { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 1mm 3mm; margin-bottom: 2.5mm; font-size: 9pt; background-color: #f0f0f0; padding: 1.5mm; border: 1px solid #ddd;}
         .academic-summary-grid strong {font-weight: bold;}
         .results-table { width: 100%; border-collapse: collapse; margin-bottom: 2.5mm; font-size: 9pt; } /* Increased font size from 8pt to 9pt */
@@ -242,12 +266,37 @@ $teacherInitials = $teacherInitials ?? ($_SESSION['current_teacher_initials'] ??
 
         .results-table .summary-row td { background-color: #f8f9fa; font-weight: bold; }
         .p1p3-performance-summary-after-table { margin-top: 2mm; margin-bottom: 2mm; font-size: 8.5pt; border: 1px solid #eaeaea; padding: 1mm; background-color: #f9f9f9; text-align:center; }
-        .remarks-section { margin-top: 1.5mm; font-size: 9pt;} /* Reduced margin-top */
-        .remarks-section .remark-block { margin-bottom: 2mm; padding: 1mm; border: 1px solid #ddd; min-height: 15mm; } /* Reduced padding */
-        .remarks-section strong { display: block; margin-bottom: 0.5mm; font-weight: bold; font-size: 10pt; }
-        .remarks-section p { margin: 0 0 1mm 0; line-height: 1.25; font-size: 10pt; }
-        .remarks-section .signature-line { margin-top: 2mm; border-top: 1px solid #000; width: 45mm; padding-top:0.5mm; font-size:9pt; text-align: center; } /* Reduced margin-top */
-        .term-dates { font-size: 11pt; margin-top: 2.5mm; margin-bottom: 2.5mm; text-align: center; border-top: 1px dashed #ccc; border-bottom: 1px dashed #ccc; padding: 1mm 0;} /* Reduced font size from 12pt */
+        .remarks-section { margin-top: 1.5mm; font-size: 9pt;}
+        .remarks-section .remark-block {
+            margin-bottom: 2mm;
+            padding: 1mm;
+            border: 1px solid #ddd;
+            min-height: 15mm;
+            text-align: center; /* Center all inline/inline-block children */
+        }
+        .remarks-section strong {
+            display: block; /* Keeps it on its own line */
+            margin-bottom: 0.5mm;
+            font-weight: bold;
+            font-size: 10pt;
+            /* text-align: center; will be inherited */
+        }
+        .remarks-section p {
+            margin: 0 auto 1mm auto; /* Auto margins for horizontal centering if it's a block */
+            line-height: 1.25;
+            font-size: 10pt;
+            max-width: 90%; /* Prevent text from touching borders if too long */
+            /* text-align: center; will be inherited */
+        }
+        .remarks-section .signature-line {
+            margin: 2mm auto 0 auto;  /* Auto margins for horizontal centering */
+            border-top: 1px solid #000;
+            width: 45mm;
+            padding-top:0.5mm;
+            font-size:9pt;
+            /* text-align: center; is already there and correct */
+        }
+        .term-dates { font-size: 11pt; margin-top: 2.5mm; margin-bottom: 2.5mm; text-align: center; border-top: 1px dashed #ccc; border-bottom: 1px dashed #ccc; padding: 1mm 0;}
         .term-dates strong {font-weight:bold;}
         .additional-note-p4p7 { font-size: 10pt; margin-top: 1.5mm; margin-bottom: 1.5mm; text-align: center; font-style: italic; } /* Reduced font-size and margins */
         .grading-scale-section-p4p7 {
@@ -297,30 +346,51 @@ $teacherInitials = $teacherInitials ?? ($_SESSION['current_teacher_initials'] ??
     <div class="report-card-container">
         <!-- Ensure no img tag for watermark is here -->
         <div class="header">
-            <div class="header-logo-container">
-                <img src="images/logo.png" alt="School Logo" onerror="this.style.display='none';this.parentElement.innerHTML='Logo not found';">
+            <!-- Tier 1: School Info (Centered) -->
+            <div class="rc-header-school-info">
+                <div class="rc-school-name"><?php echo htmlspecialchars("ST KIZITO PREPARATORY SEMINARY RWEBISHURI"); ?></div>
+                <div class="rc-school-contact">P.O BOX 406, MBARARA</div>
+                <div class="rc-school-contact">Tel. 0700172858 | Email: houseofnazareth.schools@gmail.com</div>
             </div>
-            <div class="header-info-container">
-                <div class="school-name"><?php echo htmlspecialchars("ST KIZITO PREPARATORY SEMINARY RWEBISHURI"); ?></div>
-                <div class="school-details">P.O BOX 406, MBARARA</div>
-                <div class="school-details">Tel. 0700172858 | Email: houseofnazareth.schools@gmail.com</div>
-                <div class="report-title">TERMLY ACADEMIC REPORT</div>
+
+            <!-- Tier 2: Images Row (Logo Left, Student Photo Right) using Table for mPDF -->
+            <table style="width:100%; border-collapse: collapse; margin-bottom: 3mm;">
+                <tr>
+                    <td style="width:50%; text-align:left; vertical-align:middle;">
+                        <img src="images/logo.png" alt="School Logo" class="rc-school-logo-img" style="height:40px; width:auto; object-fit:contain;" onerror="this.style.display='none';">
+                    </td>
+                    <td style="width:50%; text-align:right; vertical-align:middle;">
+                        <div style="height:40px; width:auto; min-width:32mm; max-width:32mm; border:1px solid #ddd; background-color:#f8f9fa; display:inline-block; text-align:center; line-height:40px;"> <!-- Container for photo/placeholder -->
+                            <?php if ($studentPhotoUrl): ?>
+                                <img src="<?php echo $studentPhotoUrl; ?>" alt="Student Photo" class="rc-student-photo-img" style="height:40px; width:auto; max-width:100%; max-height:100%; object-fit:cover; vertical-align:middle;" onerror="this.style.display='none'; this.parentElement.innerHTML='<span class=\"rc-photo-na\" style=\"font-size:8pt; color:#6c757d;\">N/A</span>';">
+                            <?php else: ?>
+                                <span class="rc-photo-na" style="font-size:8pt; color:#6c757d;">Photo N/A</span>
+                            <?php endif; ?>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- Tier 3: Report Title (Centered) -->
+            <div class="rc-report-title-main">
+                TERMLY ACADEMIC REPORT
             </div>
-            <div class="header-student-photo-container">
-                <img src="<?php echo $studentPhotoUrl; ?>" alt="Student Photo" onerror="this.style.display='none';this.parentElement.innerHTML='Photo not found';">
+
+            <!-- Tier 4: Student Particulars (Centered) -->
+            <div class="rc-student-particulars">
+                <div class="rc-student-name"><?php echo $studentName; ?></div>
+                <div class="rc-student-class-details">
+                    <span><strong>CLASS:</strong> <?php echo $className; ?></span> &nbsp; | &nbsp;
+                    <span><strong>YEAR:</strong> <?php echo $yearName; ?></span> &nbsp; | &nbsp;
+                    <span><strong>TERM:</strong> <?php echo $termName; ?></span>
+                </div>
+                <?php if ($linNo): ?>
+                    <div class="rc-student-lin"><strong>LIN:</strong> <?php echo $linNo; ?></div>
+                <?php endif; ?>
             </div>
         </div>
         <div class="report-body-content" style="flex-grow: 1;"> <!-- Wrapper for main content -->
-        <div class="student-details-block">
-            <!-- Student photo is now in the header, so this block only contains textual info -->
-            <div class="student-info-grid">
-                <strong>STUDENT'S NAME:</strong> <span><?php echo $studentName; ?></span>
-                <strong>CLASS:</strong> <span><?php echo $className; ?></span>
-                <strong>YEAR:</strong> <span><?php echo $yearName; ?></span>
-                <strong>TERM:</strong> <span><?php echo $termName; ?></span>
-            </div>
-            <div class="lin-number-display"><strong>LIN:</strong> <?php echo $linNo; ?></div>
-        </div>
+        <!-- Student Details Block previously here is now removed as its content moved into the header -->
 
         <!-- Standardized Academic Summary for P5-P7 -->
         <div class="academic-summary-grid">

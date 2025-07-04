@@ -136,6 +136,16 @@ $subjectDisplayNames = [
             border-color: #80bdff;
             box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
         }
+        /* Flashing animation for buttons or warnings */
+        @keyframes flash-warning-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); } /* btn-warning color */
+            70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+        }
+        .apply-flash-warning-pulse {
+            animation: flash-warning-pulse 1.5s infinite;
+            border-radius: .25rem; /* Match Bootstrap button radius */
+        }
         /* Removed inline flash-warning keyframes and class, will use global style from style.css */
     </style>
 </head>
@@ -166,12 +176,12 @@ $subjectDisplayNames = [
             unset($_SESSION['error_message']);
         }
         if (isset($_SESSION['success_message']) && !empty($_SESSION['success_message'])) {
-            // Apply green flashing and centering for success messages
-            echo '<div class="alert alert-success apply-flash-green-success alert-centered" role="alert">' . htmlspecialchars($_SESSION['success_message']) . '</div>';
+            // Apply green flashing and centering for success messages. Added text-center.
+            echo '<div class="alert alert-success text-center apply-flash-green-success alert-centered" role="alert">' . htmlspecialchars($_SESSION['success_message']) . '</div>';
             unset($_SESSION['success_message']);
         }
         if (isset($_SESSION['info_message']) && !empty($_SESSION['info_message'])) {
-            echo '<div class="alert alert-info alert-centered" role="alert">' . htmlspecialchars($_SESSION['info_message']) . '</div>';
+            echo '<div class="alert alert-info text-center alert-centered" role="alert">' . htmlspecialchars($_SESSION['info_message']) . '</div>'; // Added text-center
             unset($_SESSION['info_message']);
         }
         echo '</div>'; // End messages-container
@@ -773,20 +783,31 @@ $subjectDisplayNames = [
                 });
             }
 
-            // Flashing warning logic for recalculate message
+            // Flashing warning logic for recalculate message and button
             const recalculateWarningDiv = document.getElementById('recalculate-warning');
-            if (recalculateWarningDiv && !recalculateWarningDiv.classList.contains('d-none')) {
-                // Apply the infinite red flash
-                recalculateWarningDiv.classList.add('apply-flash-red-warning-infinite');
+            const calculateBtn = document.querySelector('a[href^="run_calculations.php?batch_id=<?php echo htmlspecialchars($batch_id); ?>"]'); // Ensured batch_id is PHP var
+
+            if (calculateBtn && recalculateWarningDiv && !recalculateWarningDiv.classList.contains('d-none')) {
+                // If the warning div is shown (meaning data has changed / flag is set)
+                calculateBtn.classList.add('apply-flash-warning-pulse'); // Make the button pulse
+
+                // The text warning div itself does not need additional JS for flashing if it has its own CSS animation.
+                // The current PHP already adds 'apply-flash-red-warning-infinite' if that class exists and is desired.
+                // For now, let's ensure the button pulse is the primary focus.
             }
 
-            const calculateBtn = document.querySelector('a[href^="run_calculations.php?batch_id=<?php echo $batch_id; ?>"]');
-            if (calculateBtn && recalculateWarningDiv) {
-                calculateBtn.addEventListener('click', function() {
-                    // Stop flashing immediately on click by removing the class
-                    recalculateWarningDiv.classList.remove('apply-flash-red-warning-infinite');
-                    // The server will handle the session flag ('batch_data_changed_for_calc')
-                    // which determines if the warning is shown on the next page load (it should be removed).
+            if (calculateBtn) {
+                calculateBtn.addEventListener('click', function(event) { // Added event parameter
+                    // Stop button flashing immediately on click
+                    this.classList.remove('apply-flash-warning-pulse');
+
+                    // Hide the text warning div as well
+                    if (recalculateWarningDiv) {
+                        recalculateWarningDiv.style.display = 'none'; // Using style.display for immediate hide
+                        // Or recalculateWarningDiv.classList.add('d-none');
+                    }
+                    // The session flag 'batch_data_changed_for_calc' will be unset by run_calculations.php upon successful completion.
+                    // No need for AJAX to clear it here.
                 });
             }
 
